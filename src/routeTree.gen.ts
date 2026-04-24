@@ -17,7 +17,6 @@ import { Route as OnboardingProfileRouteImport } from './routes/onboarding.profi
 import { Route as OnboardingProcessingRouteImport } from './routes/onboarding.processing'
 import { Route as OnboardingIdentityRouteImport } from './routes/onboarding.identity'
 import { Route as OnboardingGoalsRouteImport } from './routes/onboarding.goals'
-import { Route as OnboardingGameRouteImport } from './routes/onboarding.game'
 import { Route as OnboardingChallengesRouteImport } from './routes/onboarding.challenges'
 import { Route as AppSocialRouteImport } from './routes/app.social'
 import { Route as AppProgressRouteImport } from './routes/app.progress'
@@ -65,11 +64,6 @@ const OnboardingGoalsRoute = OnboardingGoalsRouteImport.update({
   path: '/onboarding/goals',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OnboardingGameRoute = OnboardingGameRouteImport.update({
-  id: '/onboarding/game',
-  path: '/onboarding/game',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const OnboardingChallengesRoute = OnboardingChallengesRouteImport.update({
   id: '/onboarding/challenges',
   path: '/onboarding/challenges',
@@ -111,7 +105,6 @@ export interface FileRoutesByFullPath {
   '/app/progress': typeof AppProgressRoute
   '/app/social': typeof AppSocialRoute
   '/onboarding/challenges': typeof OnboardingChallengesRoute
-  '/onboarding/game': typeof OnboardingGameRoute
   '/onboarding/goals': typeof OnboardingGoalsRoute
   '/onboarding/identity': typeof OnboardingIdentityRoute
   '/onboarding/processing': typeof OnboardingProcessingRoute
@@ -128,7 +121,6 @@ export interface FileRoutesByTo {
   '/app/progress': typeof AppProgressRoute
   '/app/social': typeof AppSocialRoute
   '/onboarding/challenges': typeof OnboardingChallengesRoute
-  '/onboarding/game': typeof OnboardingGameRoute
   '/onboarding/goals': typeof OnboardingGoalsRoute
   '/onboarding/identity': typeof OnboardingIdentityRoute
   '/onboarding/processing': typeof OnboardingProcessingRoute
@@ -146,7 +138,6 @@ export interface FileRoutesById {
   '/app/progress': typeof AppProgressRoute
   '/app/social': typeof AppSocialRoute
   '/onboarding/challenges': typeof OnboardingChallengesRoute
-  '/onboarding/game': typeof OnboardingGameRoute
   '/onboarding/goals': typeof OnboardingGoalsRoute
   '/onboarding/identity': typeof OnboardingIdentityRoute
   '/onboarding/processing': typeof OnboardingProcessingRoute
@@ -165,7 +156,6 @@ export interface FileRouteTypes {
     | '/app/progress'
     | '/app/social'
     | '/onboarding/challenges'
-    | '/onboarding/game'
     | '/onboarding/goals'
     | '/onboarding/identity'
     | '/onboarding/processing'
@@ -182,7 +172,6 @@ export interface FileRouteTypes {
     | '/app/progress'
     | '/app/social'
     | '/onboarding/challenges'
-    | '/onboarding/game'
     | '/onboarding/goals'
     | '/onboarding/identity'
     | '/onboarding/processing'
@@ -199,7 +188,6 @@ export interface FileRouteTypes {
     | '/app/progress'
     | '/app/social'
     | '/onboarding/challenges'
-    | '/onboarding/game'
     | '/onboarding/goals'
     | '/onboarding/identity'
     | '/onboarding/processing'
@@ -212,7 +200,6 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   PaywallRoute: typeof PaywallRoute
   OnboardingChallengesRoute: typeof OnboardingChallengesRoute
-  OnboardingGameRoute: typeof OnboardingGameRoute
   OnboardingGoalsRoute: typeof OnboardingGoalsRoute
   OnboardingIdentityRoute: typeof OnboardingIdentityRoute
   OnboardingProcessingRoute: typeof OnboardingProcessingRoute
@@ -276,13 +263,6 @@ declare module '@tanstack/react-router' {
       path: '/onboarding/goals'
       fullPath: '/onboarding/goals'
       preLoaderRoute: typeof OnboardingGoalsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding/game': {
-      id: '/onboarding/game'
-      path: '/onboarding/game'
-      fullPath: '/onboarding/game'
-      preLoaderRoute: typeof OnboardingGameRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding/challenges': {
@@ -353,7 +333,6 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   PaywallRoute: PaywallRoute,
   OnboardingChallengesRoute: OnboardingChallengesRoute,
-  OnboardingGameRoute: OnboardingGameRoute,
   OnboardingGoalsRoute: OnboardingGoalsRoute,
   OnboardingIdentityRoute: OnboardingIdentityRoute,
   OnboardingProcessingRoute: OnboardingProcessingRoute,
