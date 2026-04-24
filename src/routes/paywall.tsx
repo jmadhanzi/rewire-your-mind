@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Sparkles, AlertTriangle } from "lucide-react";
 import { PrimaryButton } from "@/components/rewire/PrimaryButton";
 import { cn } from "@/lib/utils";
@@ -66,11 +66,11 @@ function Paywall() {
   const { user } = useAuth();
   const [signupOpen, setSignupOpen] = useState(false);
   const onboarding = useOnboardingStore();
+  const [trialIntent, setTrialIntent] = useState(false);
 
   // Pre-select annual when arriving from the marketing landing's Pro CTA
-  const [trialIntent, setTrialIntent] = useState(false);
-  useState(() => {
-    if (typeof window === "undefined") return undefined;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
     try {
       if (window.localStorage.getItem("trialIntent") === "pro") {
         setSelectedPlan("annual");
@@ -80,8 +80,7 @@ function Paywall() {
     } catch {
       /* ignore */
     }
-    return undefined;
-  });
+  }, []);
 
   const current = PLANS.find((p) => p.id === selectedPlan)!;
 
