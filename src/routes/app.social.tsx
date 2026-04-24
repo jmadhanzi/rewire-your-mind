@@ -1,8 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { Card } from "@/components/rewire/Card";
 import { GhostButton } from "@/components/rewire/GhostButton";
 import { PrimaryButton } from "@/components/rewire/PrimaryButton";
 import { cn } from "@/lib/utils";
+import { useUserStore } from "@/store/user";
+import { isPro } from "@/lib/freemium";
+import { ProGateSheet } from "@/components/rewire/ProGateSheet";
 
 export const Route = createFileRoute("/app/social")({
   component: Page,
@@ -27,6 +31,17 @@ const FRIENDS: Friend[] = [
 
 function Page() {
   const navigate = useNavigate();
+  const subscriptionTier = useUserStore((s) => s.subscriptionTier);
+  const pro = isPro(subscriptionTier);
+  const [gateOpen, setGateOpen] = useState(false);
+
+  const handleChallenge = () => {
+    if (!pro) {
+      setGateOpen(true);
+      return;
+    }
+    navigate({ to: "/app/games" });
+  };
   return (
     <div className="px-6 pt-12 pb-6">
       <h1 className="text-[23px] font-black leading-tight" style={{ letterSpacing: "-0.6px" }}>
@@ -65,7 +80,7 @@ function Page() {
 
         <PrimaryButton
           className="mt-4 py-3 text-[14px]"
-          onClick={() => navigate({ to: "/app/games" })}
+          onClick={handleChallenge}
         >
           Train now to catch up →
         </PrimaryButton>
@@ -111,6 +126,13 @@ function Page() {
       </Card>
 
       <GhostButton className="mt-4">+ Invite friends (earn 7 free days)</GhostButton>
+
+      <ProGateSheet
+        open={gateOpen}
+        title="Challenges are Pro"
+        message="Start head-to-head challenges with friends with Rewire Pro. You can still view the leaderboard on free."
+        onClose={() => setGateOpen(false)}
+      />
     </div>
   );
 }
