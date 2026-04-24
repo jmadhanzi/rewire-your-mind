@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { ArrowUp, Sparkles, Lock, Trash2 } from "lucide-react";
+import { ArrowUp, Sparkles, Lock, Trash2, Pencil, X, Check } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { MotionScreen } from "@/components/rewire/MotionScreen";
@@ -18,6 +18,7 @@ export const Route = createFileRoute("/app/coach")({
 });
 
 type Msg = { role: "user" | "assistant"; content: string };
+type DbMsg = Msg & { id: string; created_at: string };
 
 const STARTERS = [
   "Which game should I play right now?",
@@ -34,10 +35,12 @@ function Page() {
   const streak = useUserStore((s) => s.streak);
   const pro = isPro(subscriptionTier);
 
-  const [messages, setMessages] = useState<Msg[]>([]);
+  const [messages, setMessages] = useState<DbMsg[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingDraft, setEditingDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -55,14 +58,21 @@ function Page() {
     (async () => {
       const { data, error } = await supabase
         .from("coach_messages")
-        .select("role, content")
+        .select("id, role, content, created_at")
         .eq("user_id", user.id)
         .order("created_at", { ascending: true });
       if (cancelled) return;
       if (error) {
         console.error("load coach history", error);
       } else if (data) {
-        setMessages(data.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })));
+        setMessages(
+          data.map((m) => ({
+            id: m.id,
+            role: m.role as "user" | "assistant",
+            content: m.content,
+            created_at: m.created_at,
+          })),
+        );
       }
       setHistoryLoading(false);
     })();
@@ -71,12 +81,23 @@ function Page() {
     };
   }, [user]);
 
-  const persistMessage = async (msg: Msg) => {
-    if (!user) return;
-    const { error } = await supabase
+  const persistMessage = async (msg: Msg): Promise<DbMsg | null> => {
+    if (!user) return null;
+    const { data, error } = await supabase
       .from("coach_messages")
-      .insert({ user_id: user.id, role: msg.role, content: msg.content });
-    if (error) console.error("persist coach message", error);
+      .insert({ user_id: user.id, role: msg.role, content: msg.content })
+      .select("id, role, content, created_at")
+      .single();
+    if (error) {
+      console.error("persist coach message", error);
+      return null;
+    }
+    return {
+      id: data.id,
+      role: data.role as "user" | "assistant",
+      content: data.content,
+      created_at: data.created_at,
+    };
   };
 
   const clearHistory = async () => {
@@ -113,26 +134,26 @@ function Page() {
     );
   }
 
-  const send = async (text: string) => {
-    const trimmed = text.trim();
-    if (!trimmed || isStreaming) return;
-    const userMsg: Msg = { role: "user", content: trimmed };
-    const next = [...messages, userMsg];
-    setMessages(next);
-    setInput("");
+  const runStream = async (history: DbMsg[]) => {
     setIsStreaming(true);
-
-    // Persist the user message immediately
-    persistMessage(userMsg);
-
-    // Inject lightweight context the model can use
     const context = `User context: streak ${streak} days. Brain scores — focus ${brainScores.focus}, memory ${brainScores.memory}, speed ${brainScores.speed}, logic ${brainScores.logic}, calm ${brainScores.calm}.`;
-    const payload: Msg[] = [{ role: "user", content: context }, ...next];
+    const payload: Msg[] = [
+      { role: "user", content: context },
+      ...history.map((m) => ({ role: m.role, content: m.content })),
+    ];
 
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
 
+    // Optimistic placeholder for streaming assistant
+    const placeholderId = `pending-${Date.now()}`;
+    setMessages((prev) => [
+      ...prev,
+      { id: placeholderId, role: "assistant", content: "", created_at: new Date().toISOString() },
+    ]);
+
+    let assistantSoFar = "";
     try {
       const resp = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-coach`,
@@ -149,37 +170,30 @@ function Page() {
 
       if (resp.status === 429) {
         toast.error("Rate limit reached. Try again in a moment.");
-        setIsStreaming(false);
+        setMessages((prev) => prev.filter((m) => m.id !== placeholderId));
         return;
       }
       if (resp.status === 402) {
         toast.error("AI credits exhausted.");
-        setIsStreaming(false);
+        setMessages((prev) => prev.filter((m) => m.id !== placeholderId));
         return;
       }
       if (!resp.ok || !resp.body) {
         toast.error("Coach is unavailable. Try again.");
-        setIsStreaming(false);
+        setMessages((prev) => prev.filter((m) => m.id !== placeholderId));
         return;
       }
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
       let textBuffer = "";
-      let assistantSoFar = "";
       let streamDone = false;
 
       const upsert = (chunk: string) => {
         assistantSoFar += chunk;
-        setMessages((prev) => {
-          const last = prev[prev.length - 1];
-          if (last?.role === "assistant") {
-            return prev.map((m, i) =>
-              i === prev.length - 1 ? { ...m, content: assistantSoFar } : m,
-            );
-          }
-          return [...prev, { role: "assistant", content: assistantSoFar }];
-        });
+        setMessages((prev) =>
+          prev.map((m) => (m.id === placeholderId ? { ...m, content: assistantSoFar } : m)),
+        );
       };
 
       while (!streamDone) {
@@ -209,17 +223,90 @@ function Page() {
           }
         }
       }
-      // Persist the completed assistant reply
+
       if (assistantSoFar.trim()) {
-        await persistMessage({ role: "assistant", content: assistantSoFar });
+        const persisted = await persistMessage({ role: "assistant", content: assistantSoFar });
+        if (persisted) {
+          setMessages((prev) => prev.map((m) => (m.id === placeholderId ? persisted : m)));
+        }
+      } else {
+        setMessages((prev) => prev.filter((m) => m.id !== placeholderId));
       }
     } catch (e) {
       if ((e as Error).name !== "AbortError") {
         toast.error("Connection lost.");
       }
+      setMessages((prev) => prev.filter((m) => m.id !== placeholderId));
     } finally {
       setIsStreaming(false);
     }
+  };
+
+  const send = async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed || isStreaming) return;
+    setInput("");
+    const persisted = await persistMessage({ role: "user", content: trimmed });
+    if (!persisted) {
+      toast.error("Couldn't send message.");
+      return;
+    }
+    const next = [...messages, persisted];
+    setMessages(next);
+    await runStream(next);
+  };
+
+  const startEdit = (m: DbMsg) => {
+    if (isStreaming) return;
+    setEditingId(m.id);
+    setEditingDraft(m.content);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditingDraft("");
+  };
+
+  const saveEdit = async () => {
+    if (!user || !editingId) return;
+    const trimmed = editingDraft.trim();
+    if (!trimmed || isStreaming) return;
+
+    const idx = messages.findIndex((m) => m.id === editingId);
+    if (idx === -1) return;
+    const target = messages[idx];
+    const tail = messages.slice(idx); // messages to remove (edited + everything after)
+    const tailIds = tail.map((m) => m.id).filter((id) => !id.startsWith("pending-"));
+
+    // Remove from DB: the edited message and everything after it (by created_at >=)
+    const { error: delErr } = await supabase
+      .from("coach_messages")
+      .delete()
+      .eq("user_id", user.id)
+      .gte("created_at", target.created_at);
+    if (delErr) {
+      console.error("delete tail", delErr);
+      toast.error("Couldn't save edit.");
+      return;
+    }
+    // Belt-and-suspenders: also delete by id list in case of timestamp ties
+    if (tailIds.length > 0) {
+      await supabase.from("coach_messages").delete().in("id", tailIds);
+    }
+
+    const head = messages.slice(0, idx);
+    setMessages(head);
+    cancelEdit();
+
+    // Re-insert edited message and stream a new reply
+    const persisted = await persistMessage({ role: "user", content: trimmed });
+    if (!persisted) {
+      toast.error("Couldn't save edit.");
+      return;
+    }
+    const next = [...head, persisted];
+    setMessages(next);
+    await runStream(next);
   };
 
   return (
@@ -281,12 +368,24 @@ function Page() {
             <AnimatePresence initial={false}>
               {messages.map((m, i) => (
                 <motion.div
-                  key={i}
+                  key={m.id}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
-                  className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}
+                  className={cn(
+                    "group flex items-end gap-1.5",
+                    m.role === "user" ? "justify-end" : "justify-start",
+                  )}
                 >
+                  {m.role === "user" && editingId !== m.id && !isStreaming && (
+                    <button
+                      onClick={() => startEdit(m)}
+                      className="mb-1 flex h-7 w-7 items-center justify-center rounded-full text-white/30 opacity-0 transition-all hover:bg-white/5 hover:text-white/80 group-hover:opacity-100"
+                      aria-label="Edit message"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                   <div
                     className={cn(
                       "max-w-[85%] rounded-[16px] px-3.5 py-2.5 text-[13px] leading-relaxed",
@@ -295,7 +394,42 @@ function Page() {
                         : "border border-white/[0.07] bg-[#131A2E] text-white/90",
                     )}
                   >
-                    {m.role === "assistant" ? (
+                    {editingId === m.id ? (
+                      <div className="flex w-[260px] flex-col gap-2">
+                        <textarea
+                          value={editingDraft}
+                          onChange={(e) => setEditingDraft(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                              e.preventDefault();
+                              saveEdit();
+                            }
+                            if (e.key === "Escape") {
+                              e.preventDefault();
+                              cancelEdit();
+                            }
+                          }}
+                          rows={3}
+                          autoFocus
+                          className="w-full resize-none rounded-[10px] bg-white/15 p-2 text-[13px] text-white placeholder:text-white/40 focus:outline-none"
+                        />
+                        <div className="flex justify-end gap-1.5">
+                          <button
+                            onClick={cancelEdit}
+                            className="flex h-7 items-center gap-1 rounded-full bg-white/10 px-2.5 text-[11px] text-white/80 hover:bg-white/20"
+                          >
+                            <X className="h-3 w-3" /> Cancel
+                          </button>
+                          <button
+                            onClick={saveEdit}
+                            disabled={!editingDraft.trim()}
+                            className="flex h-7 items-center gap-1 rounded-full bg-white px-2.5 text-[11px] font-semibold text-[#7858FF] disabled:opacity-50"
+                          >
+                            <Check className="h-3 w-3" /> Save & regenerate
+                          </button>
+                        </div>
+                      </div>
+                    ) : m.role === "assistant" ? (
                       <div className="prose prose-invert prose-sm max-w-none [&_p]:my-1 [&_ul]:my-1 [&_ol]:my-1">
                         <ReactMarkdown>{m.content || "…"}</ReactMarkdown>
                       </div>
