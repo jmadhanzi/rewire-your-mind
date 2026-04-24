@@ -129,6 +129,14 @@ function Page() {
     const accuracy = attempts === 0 ? 100 : Math.round((TOTAL_PAIRS / attempts) * 100);
     const key = Date.now();
     setSavedKey(key);
+    // Achievement toast
+    toast(
+      <span className="flex items-center gap-2 text-[13px] font-bold">
+        <span className="text-[16px]">🧠</span>
+        <span>Memory +{Math.max(1, Math.round(score / 50))}pts</span>
+      </span>,
+      { duration: 2500, position: "bottom-center" },
+    );
     const record = {
       gameId: "memory-matrix",
       score,
