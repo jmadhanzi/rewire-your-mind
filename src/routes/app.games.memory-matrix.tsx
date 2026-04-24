@@ -10,6 +10,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { AdBanner } from "@/components/rewire/AdBanner";
 import { FREE_AD_EVERY_N_SESSIONS, FREE_DAILY_SESSION_LIMIT, isPro, timeUntilMidnight } from "@/lib/freemium";
+import { haptics } from "@/lib/haptics";
+import { MotionScreen } from "@/components/rewire/MotionScreen";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const Route = createFileRoute("/app/games/memory-matrix")({
   component: Page,
@@ -175,12 +178,14 @@ function Page() {
           setMatches((m) => m + 1);
           setScore((s) => s + 50);
           setRevealed([]);
+          haptics.match();
           toast.success("Match!", { duration: 1200 });
         }, 350);
       } else {
         addTimeout(() => {
           setRevealed([]);
           setScore((s) => Math.max(0, s - 5));
+          haptics.miss();
         }, 800);
       }
     }
