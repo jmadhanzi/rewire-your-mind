@@ -24,6 +24,7 @@ import { Route as AppProgressRouteImport } from './routes/app.progress'
 import { Route as AppMeRouteImport } from './routes/app.me'
 import { Route as AppHomeRouteImport } from './routes/app.home'
 import { Route as AppGamesRouteImport } from './routes/app.games'
+import { Route as AppGamesMemoryMatrixRouteImport } from './routes/app.games.memory-matrix'
 import { Route as AppGamesGameIdRouteImport } from './routes/app.games.$gameId'
 
 const PaywallRoute = PaywallRouteImport.update({
@@ -101,6 +102,11 @@ const AppGamesRoute = AppGamesRouteImport.update({
   path: '/games',
   getParentRoute: () => AppRoute,
 } as any)
+const AppGamesMemoryMatrixRoute = AppGamesMemoryMatrixRouteImport.update({
+  id: '/memory-matrix',
+  path: '/memory-matrix',
+  getParentRoute: () => AppGamesRoute,
+} as any)
 const AppGamesGameIdRoute = AppGamesGameIdRouteImport.update({
   id: '/$gameId',
   path: '/$gameId',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/profile': typeof OnboardingProfileRoute
   '/onboarding/time': typeof OnboardingTimeRoute
   '/app/games/$gameId': typeof AppGamesGameIdRoute
+  '/app/games/memory-matrix': typeof AppGamesMemoryMatrixRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/onboarding/profile': typeof OnboardingProfileRoute
   '/onboarding/time': typeof OnboardingTimeRoute
   '/app/games/$gameId': typeof AppGamesGameIdRoute
+  '/app/games/memory-matrix': typeof AppGamesMemoryMatrixRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/onboarding/profile': typeof OnboardingProfileRoute
   '/onboarding/time': typeof OnboardingTimeRoute
   '/app/games/$gameId': typeof AppGamesGameIdRoute
+  '/app/games/memory-matrix': typeof AppGamesMemoryMatrixRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/onboarding/profile'
     | '/onboarding/time'
     | '/app/games/$gameId'
+    | '/app/games/memory-matrix'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/onboarding/profile'
     | '/onboarding/time'
     | '/app/games/$gameId'
+    | '/app/games/memory-matrix'
   id:
     | '__root__'
     | '/'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/onboarding/profile'
     | '/onboarding/time'
     | '/app/games/$gameId'
+    | '/app/games/memory-matrix'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -339,6 +351,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppGamesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/games/memory-matrix': {
+      id: '/app/games/memory-matrix'
+      path: '/memory-matrix'
+      fullPath: '/app/games/memory-matrix'
+      preLoaderRoute: typeof AppGamesMemoryMatrixRouteImport
+      parentRoute: typeof AppGamesRoute
+    }
     '/app/games/$gameId': {
       id: '/app/games/$gameId'
       path: '/$gameId'
@@ -351,10 +370,12 @@ declare module '@tanstack/react-router' {
 
 interface AppGamesRouteChildren {
   AppGamesGameIdRoute: typeof AppGamesGameIdRoute
+  AppGamesMemoryMatrixRoute: typeof AppGamesMemoryMatrixRoute
 }
 
 const AppGamesRouteChildren: AppGamesRouteChildren = {
   AppGamesGameIdRoute: AppGamesGameIdRoute,
+  AppGamesMemoryMatrixRoute: AppGamesMemoryMatrixRoute,
 }
 
 const AppGamesRouteWithChildren = AppGamesRoute._addFileChildren(
