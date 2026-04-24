@@ -232,7 +232,7 @@ function Page() {
 
   if (limitReached) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 pt-12 text-center">
+      <MotionScreen className="flex min-h-[70vh] flex-col items-center justify-center px-6 pt-12 text-center">
         <div className="text-[48px]">🌙</div>
         <h1 className="mt-3 text-[22px] font-black" style={{ letterSpacing: "-0.5px" }}>
           Daily limit reached
@@ -249,12 +249,12 @@ function Page() {
             Come back tomorrow
           </GhostButton>
         </div>
-      </div>
+      </MotionScreen>
     );
   }
 
   return (
-    <div className="relative min-h-screen px-5 pt-12 pb-8">
+    <MotionScreen className="relative min-h-screen px-5 pt-12 pb-8">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <Link
@@ -337,12 +337,22 @@ function Page() {
       </div>
 
       {/* Complete overlay */}
-      {complete && (
-        <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center">
-          <div
-            className="w-full max-w-md rounded-t-[28px] border border-white/[0.07] bg-[#0D1226] p-6 sm:rounded-[28px]"
-            style={{ animation: "fadeUp 350ms ease-out" }}
+      <AnimatePresence>
+        {complete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center"
           >
+            <motion.div
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 280, damping: 26 }}
+              className="w-full max-w-md rounded-t-[28px] border border-white/[0.07] bg-[#0D1226] p-6 sm:rounded-[28px]"
+            >
             <h2
               className="text-center text-[24px] font-black leading-tight"
               style={{ letterSpacing: "-0.6px" }}
@@ -392,9 +402,10 @@ function Page() {
               </PrimaryButton>
               <GhostButton onClick={reset}>Play again</GhostButton>
             </div>
-          </div>
-        </div>
-      )}
-    </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </MotionScreen>
   );
 }
