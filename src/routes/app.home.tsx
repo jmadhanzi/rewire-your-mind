@@ -4,6 +4,7 @@ import { AppHeader } from "@/components/rewire/AppHeader";
 import { useUserStore } from "@/store/user";
 import { useOnboardingStore } from "@/store/onboarding";
 import { FREE_DAILY_SESSION_LIMIT, isPro } from "@/lib/freemium";
+import { MotionScreen } from "@/components/rewire/MotionScreen";
 
 export const Route = createFileRoute("/app/home")({
   component: Page,
@@ -30,7 +31,7 @@ function Page() {
           : "Focus & Attention";
 
   return (
-    <div className="animate-[fadeUp_350ms_ease]">
+    <MotionScreen>
       <AppHeader greeting="Good morning 👋" title="Ready to rewire?" />
 
       <div className="px-6 pt-7 space-y-4">
@@ -123,7 +124,7 @@ function Page() {
           </div>
         </button>
       </div>
-    </div>
+    </MotionScreen>
   );
 }
 
