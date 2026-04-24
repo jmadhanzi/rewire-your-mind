@@ -6,6 +6,7 @@ import { GhostButton } from "../components/rewire/GhostButton";
 import { Card } from "../components/rewire/Card";
 import { Tag } from "../components/rewire/Tag";
 import { Star, Quote } from "lucide-react";
+import { useOnboardingStore } from "@/store/onboarding";
 
 export const Route = createFileRoute("/welcome")({
   component: Index,
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/welcome")({
 
 function Index() {
   const navigate = useNavigate();
+  const resetOnboarding = useOnboardingStore((s) => s.reset);
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#07091A] text-white">
       {/* ambient glows */}
@@ -70,7 +72,12 @@ function Index() {
         </Card>
 
         <div className="mt-auto pt-10">
-          <PrimaryButton onClick={() => navigate({ to: "/onboarding/goals" })}>
+          <PrimaryButton
+            onClick={() => {
+              resetOnboarding();
+              navigate({ to: "/onboarding/goals" });
+            }}
+          >
             Start your free journey →
           </PrimaryButton>
           <div className="h-3" />
