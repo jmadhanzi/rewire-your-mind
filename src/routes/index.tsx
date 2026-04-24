@@ -74,7 +74,9 @@ function Index() {
             Start your free journey →
           </PrimaryButton>
           <div className="h-3" />
-          <GhostButton>I already have an account</GhostButton>
+          <GhostButton onClick={() => navigate({ to: "/login" })}>
+            I already have an account
+          </GhostButton>
           <p className="mt-5 text-center text-[12px] text-white/35">
             7-day free trial · No credit card needed
           </p>
