@@ -22,7 +22,12 @@ export function AppHeader({
         </h1>
       </div>
       <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-[#F5C518]/40 bg-[#F5C518]/15 px-3 py-1.5 text-[12px] font-bold text-[#F5C518] shadow-[0_0_18px_rgba(245,197,24,0.18)]">
-        <span className="text-[14px] leading-none">🔥</span>
+        <span
+          className="inline-block text-[14px] leading-none"
+          style={{ animation: "streakPulse 2s ease-in-out infinite" }}
+        >
+          🔥
+        </span>
         <span className="leading-none">{streak}</span>
         <span className="text-[10px] font-semibold uppercase tracking-wider text-[#F5C518]/80">
           day streak
