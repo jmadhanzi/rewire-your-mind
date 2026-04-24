@@ -9,38 +9,233 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PaywallRouteImport } from './routes/paywall'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OnboardingTimeRouteImport } from './routes/onboarding.time'
+import { Route as OnboardingProfileRouteImport } from './routes/onboarding.profile'
+import { Route as OnboardingProcessingRouteImport } from './routes/onboarding.processing'
+import { Route as OnboardingIdentityRouteImport } from './routes/onboarding.identity'
+import { Route as OnboardingGoalsRouteImport } from './routes/onboarding.goals'
+import { Route as OnboardingGameRouteImport } from './routes/onboarding.game'
+import { Route as OnboardingChallengesRouteImport } from './routes/onboarding.challenges'
+import { Route as AppSocialRouteImport } from './routes/app.social'
+import { Route as AppProgressRouteImport } from './routes/app.progress'
+import { Route as AppMeRouteImport } from './routes/app.me'
+import { Route as AppHomeRouteImport } from './routes/app.home'
+import { Route as AppGamesRouteImport } from './routes/app.games'
 
+const PaywallRoute = PaywallRouteImport.update({
+  id: '/paywall',
+  path: '/paywall',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingTimeRoute = OnboardingTimeRouteImport.update({
+  id: '/onboarding/time',
+  path: '/onboarding/time',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingProfileRoute = OnboardingProfileRouteImport.update({
+  id: '/onboarding/profile',
+  path: '/onboarding/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingProcessingRoute = OnboardingProcessingRouteImport.update({
+  id: '/onboarding/processing',
+  path: '/onboarding/processing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingIdentityRoute = OnboardingIdentityRouteImport.update({
+  id: '/onboarding/identity',
+  path: '/onboarding/identity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingGoalsRoute = OnboardingGoalsRouteImport.update({
+  id: '/onboarding/goals',
+  path: '/onboarding/goals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingGameRoute = OnboardingGameRouteImport.update({
+  id: '/onboarding/game',
+  path: '/onboarding/game',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingChallengesRoute = OnboardingChallengesRouteImport.update({
+  id: '/onboarding/challenges',
+  path: '/onboarding/challenges',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppSocialRoute = AppSocialRouteImport.update({
+  id: '/social',
+  path: '/social',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProgressRoute = AppProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMeRoute = AppMeRouteImport.update({
+  id: '/me',
+  path: '/me',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHomeRoute = AppHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppGamesRoute = AppGamesRouteImport.update({
+  id: '/games',
+  path: '/games',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/paywall': typeof PaywallRoute
+  '/app/games': typeof AppGamesRoute
+  '/app/home': typeof AppHomeRoute
+  '/app/me': typeof AppMeRoute
+  '/app/progress': typeof AppProgressRoute
+  '/app/social': typeof AppSocialRoute
+  '/onboarding/challenges': typeof OnboardingChallengesRoute
+  '/onboarding/game': typeof OnboardingGameRoute
+  '/onboarding/goals': typeof OnboardingGoalsRoute
+  '/onboarding/identity': typeof OnboardingIdentityRoute
+  '/onboarding/processing': typeof OnboardingProcessingRoute
+  '/onboarding/profile': typeof OnboardingProfileRoute
+  '/onboarding/time': typeof OnboardingTimeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/paywall': typeof PaywallRoute
+  '/app/games': typeof AppGamesRoute
+  '/app/home': typeof AppHomeRoute
+  '/app/me': typeof AppMeRoute
+  '/app/progress': typeof AppProgressRoute
+  '/app/social': typeof AppSocialRoute
+  '/onboarding/challenges': typeof OnboardingChallengesRoute
+  '/onboarding/game': typeof OnboardingGameRoute
+  '/onboarding/goals': typeof OnboardingGoalsRoute
+  '/onboarding/identity': typeof OnboardingIdentityRoute
+  '/onboarding/processing': typeof OnboardingProcessingRoute
+  '/onboarding/profile': typeof OnboardingProfileRoute
+  '/onboarding/time': typeof OnboardingTimeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/paywall': typeof PaywallRoute
+  '/app/games': typeof AppGamesRoute
+  '/app/home': typeof AppHomeRoute
+  '/app/me': typeof AppMeRoute
+  '/app/progress': typeof AppProgressRoute
+  '/app/social': typeof AppSocialRoute
+  '/onboarding/challenges': typeof OnboardingChallengesRoute
+  '/onboarding/game': typeof OnboardingGameRoute
+  '/onboarding/goals': typeof OnboardingGoalsRoute
+  '/onboarding/identity': typeof OnboardingIdentityRoute
+  '/onboarding/processing': typeof OnboardingProcessingRoute
+  '/onboarding/profile': typeof OnboardingProfileRoute
+  '/onboarding/time': typeof OnboardingTimeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/paywall'
+    | '/app/games'
+    | '/app/home'
+    | '/app/me'
+    | '/app/progress'
+    | '/app/social'
+    | '/onboarding/challenges'
+    | '/onboarding/game'
+    | '/onboarding/goals'
+    | '/onboarding/identity'
+    | '/onboarding/processing'
+    | '/onboarding/profile'
+    | '/onboarding/time'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/app'
+    | '/paywall'
+    | '/app/games'
+    | '/app/home'
+    | '/app/me'
+    | '/app/progress'
+    | '/app/social'
+    | '/onboarding/challenges'
+    | '/onboarding/game'
+    | '/onboarding/goals'
+    | '/onboarding/identity'
+    | '/onboarding/processing'
+    | '/onboarding/profile'
+    | '/onboarding/time'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/paywall'
+    | '/app/games'
+    | '/app/home'
+    | '/app/me'
+    | '/app/progress'
+    | '/app/social'
+    | '/onboarding/challenges'
+    | '/onboarding/game'
+    | '/onboarding/goals'
+    | '/onboarding/identity'
+    | '/onboarding/processing'
+    | '/onboarding/profile'
+    | '/onboarding/time'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  PaywallRoute: typeof PaywallRoute
+  OnboardingChallengesRoute: typeof OnboardingChallengesRoute
+  OnboardingGameRoute: typeof OnboardingGameRoute
+  OnboardingGoalsRoute: typeof OnboardingGoalsRoute
+  OnboardingIdentityRoute: typeof OnboardingIdentityRoute
+  OnboardingProcessingRoute: typeof OnboardingProcessingRoute
+  OnboardingProfileRoute: typeof OnboardingProfileRoute
+  OnboardingTimeRoute: typeof OnboardingTimeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/paywall': {
+      id: '/paywall'
+      path: '/paywall'
+      fullPath: '/paywall'
+      preLoaderRoute: typeof PaywallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +243,132 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding/time': {
+      id: '/onboarding/time'
+      path: '/onboarding/time'
+      fullPath: '/onboarding/time'
+      preLoaderRoute: typeof OnboardingTimeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/profile': {
+      id: '/onboarding/profile'
+      path: '/onboarding/profile'
+      fullPath: '/onboarding/profile'
+      preLoaderRoute: typeof OnboardingProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/processing': {
+      id: '/onboarding/processing'
+      path: '/onboarding/processing'
+      fullPath: '/onboarding/processing'
+      preLoaderRoute: typeof OnboardingProcessingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/identity': {
+      id: '/onboarding/identity'
+      path: '/onboarding/identity'
+      fullPath: '/onboarding/identity'
+      preLoaderRoute: typeof OnboardingIdentityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/goals': {
+      id: '/onboarding/goals'
+      path: '/onboarding/goals'
+      fullPath: '/onboarding/goals'
+      preLoaderRoute: typeof OnboardingGoalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/game': {
+      id: '/onboarding/game'
+      path: '/onboarding/game'
+      fullPath: '/onboarding/game'
+      preLoaderRoute: typeof OnboardingGameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/challenges': {
+      id: '/onboarding/challenges'
+      path: '/onboarding/challenges'
+      fullPath: '/onboarding/challenges'
+      preLoaderRoute: typeof OnboardingChallengesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/social': {
+      id: '/app/social'
+      path: '/social'
+      fullPath: '/app/social'
+      preLoaderRoute: typeof AppSocialRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/progress': {
+      id: '/app/progress'
+      path: '/progress'
+      fullPath: '/app/progress'
+      preLoaderRoute: typeof AppProgressRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/me': {
+      id: '/app/me'
+      path: '/me'
+      fullPath: '/app/me'
+      preLoaderRoute: typeof AppMeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/home': {
+      id: '/app/home'
+      path: '/home'
+      fullPath: '/app/home'
+      preLoaderRoute: typeof AppHomeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/games': {
+      id: '/app/games'
+      path: '/games'
+      fullPath: '/app/games'
+      preLoaderRoute: typeof AppGamesRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppGamesRoute: typeof AppGamesRoute
+  AppHomeRoute: typeof AppHomeRoute
+  AppMeRoute: typeof AppMeRoute
+  AppProgressRoute: typeof AppProgressRoute
+  AppSocialRoute: typeof AppSocialRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppGamesRoute: AppGamesRoute,
+  AppHomeRoute: AppHomeRoute,
+  AppMeRoute: AppMeRoute,
+  AppProgressRoute: AppProgressRoute,
+  AppSocialRoute: AppSocialRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  PaywallRoute: PaywallRoute,
+  OnboardingChallengesRoute: OnboardingChallengesRoute,
+  OnboardingGameRoute: OnboardingGameRoute,
+  OnboardingGoalsRoute: OnboardingGoalsRoute,
+  OnboardingIdentityRoute: OnboardingIdentityRoute,
+  OnboardingProcessingRoute: OnboardingProcessingRoute,
+  OnboardingProfileRoute: OnboardingProfileRoute,
+  OnboardingTimeRoute: OnboardingTimeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
