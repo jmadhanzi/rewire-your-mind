@@ -221,6 +221,57 @@
   }
 }
 
+@keyframes brainFloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-14px) scale(1.02);
+  }
+}
+
+@keyframes brainGlow {
+  0%,
+  100% {
+    opacity: 0.55;
+    filter: blur(80px);
+  }
+  50% {
+    opacity: 0.85;
+    filter: blur(110px);
+  }
+}
+
+@keyframes auraSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.brain-float {
+  animation: brainFloat 7s ease-in-out infinite;
+}
+
+.brain-glow {
+  animation: brainGlow 5s ease-in-out infinite;
+}
+
+.aura-spin {
+  animation: auraSpin 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brain-float,
+  .brain-glow,
+  .aura-spin {
+    animation: none;
+  }
+}
+
 .shimmer {
   background: linear-gradient(
     90deg,

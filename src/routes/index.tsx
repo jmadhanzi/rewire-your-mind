@@ -24,6 +24,7 @@ import {
 import { Logo } from "@/components/rewire/Logo";
 import { MiniMemory } from "@/components/marketing/MiniMemory";
 import { PhoneMock } from "@/components/marketing/PhoneMock";
+import brainHero from "@/assets/brain-hero.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -194,6 +195,34 @@ function Hero() {
     <section className="relative overflow-hidden px-5 pt-28 pb-20 md:min-h-screen md:pt-40 md:pb-24">
       <div className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-[#7858FF]/25 blur-[160px]" />
       <div className="pointer-events-none absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-[#00D9A3]/15 blur-[140px]" />
+
+      {/* Animated brain backdrop */}
+      <div className="pointer-events-none absolute left-1/2 top-[18%] -translate-x-1/2 select-none">
+        <div className="relative h-[520px] w-[520px] md:h-[680px] md:w-[680px]">
+          <div
+            className="absolute inset-0 rounded-full bg-[radial-gradient(circle,_rgba(120,88,255,0.55)_0%,_rgba(0,217,163,0.25)_45%,_transparent_70%)] brain-glow"
+            aria-hidden
+          />
+          <div
+            className="absolute inset-[-40px] rounded-full border border-white/[0.06] aura-spin"
+            style={{
+              background:
+                "conic-gradient(from 0deg, transparent 0deg, rgba(120,88,255,0.18) 60deg, transparent 120deg, rgba(0,217,163,0.18) 200deg, transparent 260deg, rgba(245,197,24,0.15) 320deg, transparent 360deg)",
+              maskImage:
+                "radial-gradient(circle, transparent 55%, black 58%, black 70%, transparent 75%)",
+              WebkitMaskImage:
+                "radial-gradient(circle, transparent 55%, black 58%, black 70%, transparent 75%)",
+            }}
+            aria-hidden
+          />
+          <img
+            src={brainHero}
+            alt=""
+            aria-hidden
+            className="brain-float relative z-[1] h-full w-full object-contain opacity-40 mix-blend-screen md:opacity-50"
+          />
+        </div>
+      </div>
 
       <div className="relative mx-auto max-w-[1100px]">
         <motion.div
