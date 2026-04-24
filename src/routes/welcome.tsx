@@ -7,7 +7,7 @@ import { Card } from "../components/rewire/Card";
 import { Tag } from "../components/rewire/Tag";
 import { Star, Quote } from "lucide-react";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/welcome")({
   component: Index,
 });
 

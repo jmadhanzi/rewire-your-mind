@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as PaywallRouteImport } from './routes/paywall'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
@@ -29,6 +30,11 @@ import { Route as AppCoachRouteImport } from './routes/app.coach'
 import { Route as AppGamesMemoryMatrixRouteImport } from './routes/app.games.memory-matrix'
 import { Route as AppGamesGameIdRouteImport } from './routes/app.games.$gameId'
 
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PaywallRoute = PaywallRouteImport.update({
   id: '/paywall',
   path: '/paywall',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/paywall': typeof PaywallRoute
+  '/welcome': typeof WelcomeRoute
   '/app/coach': typeof AppCoachRoute
   '/app/games': typeof AppGamesRouteWithChildren
   '/app/home': typeof AppHomeRoute
@@ -151,6 +158,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/paywall': typeof PaywallRoute
+  '/welcome': typeof WelcomeRoute
   '/app/coach': typeof AppCoachRoute
   '/app/games': typeof AppGamesRouteWithChildren
   '/app/home': typeof AppHomeRoute
@@ -173,6 +181,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/paywall': typeof PaywallRoute
+  '/welcome': typeof WelcomeRoute
   '/app/coach': typeof AppCoachRoute
   '/app/games': typeof AppGamesRouteWithChildren
   '/app/home': typeof AppHomeRoute
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/paywall'
+    | '/welcome'
     | '/app/coach'
     | '/app/games'
     | '/app/home'
@@ -217,6 +227,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/paywall'
+    | '/welcome'
     | '/app/coach'
     | '/app/games'
     | '/app/home'
@@ -238,6 +249,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/paywall'
+    | '/welcome'
     | '/app/coach'
     | '/app/games'
     | '/app/home'
@@ -260,6 +272,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
   PaywallRoute: typeof PaywallRoute
+  WelcomeRoute: typeof WelcomeRoute
   OnboardingChallengesRoute: typeof OnboardingChallengesRoute
   OnboardingGameRoute: typeof OnboardingGameRoute
   OnboardingGoalsRoute: typeof OnboardingGoalsRoute
@@ -271,6 +284,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/paywall': {
       id: '/paywall'
       path: '/paywall'
@@ -446,6 +466,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
   PaywallRoute: PaywallRoute,
+  WelcomeRoute: WelcomeRoute,
   OnboardingChallengesRoute: OnboardingChallengesRoute,
   OnboardingGameRoute: OnboardingGameRoute,
   OnboardingGoalsRoute: OnboardingGoalsRoute,
