@@ -67,6 +67,22 @@ function Paywall() {
   const [signupOpen, setSignupOpen] = useState(false);
   const onboarding = useOnboardingStore();
 
+  // Pre-select annual when arriving from the marketing landing's Pro CTA
+  const [trialIntent, setTrialIntent] = useState(false);
+  useState(() => {
+    if (typeof window === "undefined") return undefined;
+    try {
+      if (window.localStorage.getItem("trialIntent") === "pro") {
+        setSelectedPlan("annual");
+        setTrialIntent(true);
+        window.localStorage.removeItem("trialIntent");
+      }
+    } catch {
+      /* ignore */
+    }
+    return undefined;
+  });
+
   const current = PLANS.find((p) => p.id === selectedPlan)!;
 
   const persistOnboardingFor = async (userId: string) => {
