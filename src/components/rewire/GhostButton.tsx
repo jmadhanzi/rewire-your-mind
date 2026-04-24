@@ -1,19 +1,23 @@
 import * as React from "react";
+import { motion, type HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-type Props = React.ButtonHTMLAttributes<HTMLButtonElement>;
+type Props = Omit<HTMLMotionProps<"button">, "ref">;
 
-export function GhostButton({ className, children, ...props }: Props) {
+export function GhostButton({ className, children, disabled, ...props }: Props) {
   return (
-    <button
+    <motion.button
       {...props}
+      disabled={disabled}
+      whileTap={disabled ? undefined : { scale: 0.96 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
       className={cn(
         "w-full rounded-2xl border border-white/20 bg-transparent py-4 text-base font-medium text-white/60",
-        "transition-all hover:bg-white/5 hover:text-white/80 active:scale-[0.99]",
+        "hover:bg-white/5 hover:text-white/80 disabled:opacity-50 disabled:pointer-events-none",
         className,
       )}
     >
       {children}
-    </button>
+    </motion.button>
   );
 }

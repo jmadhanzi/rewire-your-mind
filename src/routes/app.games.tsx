@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import { useUserStore } from "@/store/user";
 import { isFreeGame, isPro, FREE_DAILY_SESSION_LIMIT } from "@/lib/freemium";
 import { ProGateSheet } from "@/components/rewire/ProGateSheet";
+import { MotionScreen } from "@/components/rewire/MotionScreen";
+import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/app/games")({
   component: Page,
@@ -69,7 +71,7 @@ function Page() {
   };
 
   return (
-    <div className="px-6 pt-12 pb-6">
+    <MotionScreen className="px-6 pt-12 pb-6">
       <h1 className="text-[23px] font-black leading-tight" style={{ letterSpacing: "-0.6px" }}>
         Games
       </h1>
@@ -130,11 +132,13 @@ function Page() {
         {filtered.map((g) => {
           const locked = !pro && !isFreeGame(g.id);
           return (
-            <button
+            <motion.button
               key={g.id}
               onClick={() => openGame(g.id)}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 22 }}
               className={cn(
-                "relative flex flex-col rounded-[18px] border border-white/[0.07] bg-[#131A2E] p-3 text-left transition-transform active:scale-[0.98]",
+                "relative flex flex-col rounded-[18px] border border-white/[0.07] bg-[#131A2E] p-3 text-left",
                 locked && "opacity-60",
               )}
             >
@@ -160,7 +164,7 @@ function Page() {
                   {locked ? "Pro" : g.difficulty}
                 </span>
               </div>
-            </button>
+            </motion.button>
           );
         })}
       </div>
@@ -171,6 +175,6 @@ function Page() {
         message={gate?.message}
         onClose={() => setGate(null)}
       />
-    </div>
+    </MotionScreen>
   );
 }

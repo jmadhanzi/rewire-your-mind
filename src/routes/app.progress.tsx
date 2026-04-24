@@ -3,6 +3,9 @@ import { Card } from "@/components/rewire/Card";
 import { useMemo } from "react";
 import { useUserStore } from "@/store/user";
 import { todayKey } from "@/lib/streak";
+import { motion } from "framer-motion";
+import { MotionScreen } from "@/components/rewire/MotionScreen";
+import { useCountUp } from "@/hooks/use-count-up";
 
 export const Route = createFileRoute("/app/progress")({
   component: Page,
@@ -66,8 +69,12 @@ function Page() {
     };
   }, [sessionHistory, totalSessions]);
 
+  const streakDisplay = useCountUp(streak);
+  const accuracyDisplay = useCountUp(accuracy);
+  const sessionsDisplay = useCountUp(sessionsCount);
+
   return (
-    <div className="px-6 pt-12 pb-6">
+    <MotionScreen className="px-6 pt-12 pb-6">
       <h1 className="text-[23px] font-black leading-tight" style={{ letterSpacing: "-0.6px" }}>
         Progress
       </h1>
@@ -75,14 +82,14 @@ function Page() {
       {/* Summary stats */}
       <div className="mt-5 grid grid-cols-3 gap-3">
         {[
-          { icon: "🔥", value: `${streak}`, label: "Streak" },
-          { icon: "🎯", value: `${accuracy}%`, label: "Accuracy" },
-          { icon: "⚡", value: `${sessionsCount}`, label: "Sessions" },
+          { icon: "🔥", value: `${streakDisplay}`, label: "Streak" },
+          { icon: "🎯", value: `${accuracyDisplay}%`, label: "Accuracy" },
+          { icon: "⚡", value: `${sessionsDisplay}`, label: "Sessions" },
         ].map((s) => (
           <Card key={s.label} className="flex flex-col items-center py-4">
             <span className="text-[22px] leading-none">{s.icon}</span>
             <span
-              className="mt-2 text-[22px] font-black leading-none"
+              className="mt-2 text-[22px] font-black leading-none tabular-nums"
               style={{ letterSpacing: "-0.5px" }}
             >
               {s.value}
@@ -130,7 +137,7 @@ function Page() {
       <Card className="mt-4">
         <h2 className="text-[14px] font-bold">Cognitive improvement</h2>
         <div className="mt-4 space-y-4">
-          {DOMAINS.map((d) => {
+          {DOMAINS.map((d, i) => {
             const delta = d.after - d.before;
             return (
               <div key={d.name}>
@@ -146,9 +153,12 @@ function Page() {
                   </span>
                 </div>
                 <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{ width: `${d.after}%`, backgroundColor: d.color }}
+                  <motion.div
+                    className="h-full rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${d.after}%` }}
+                    transition={{ duration: 0.7, ease: "easeOut", delay: i * 0.1 }}
+                    style={{ backgroundColor: d.color }}
                   />
                 </div>
               </div>
@@ -156,6 +166,6 @@ function Page() {
           })}
         </div>
       </Card>
-    </div>
+    </MotionScreen>
   );
 }

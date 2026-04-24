@@ -10,6 +10,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { AdBanner } from "@/components/rewire/AdBanner";
 import { FREE_AD_EVERY_N_SESSIONS, FREE_DAILY_SESSION_LIMIT, isPro, timeUntilMidnight } from "@/lib/freemium";
+import { haptics } from "@/lib/haptics";
+import { MotionScreen } from "@/components/rewire/MotionScreen";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const Route = createFileRoute("/app/games/memory-matrix")({
   component: Page,
@@ -46,12 +49,18 @@ function Page() {
   const recordSessionForUser = useUserStore((s) => s.recordSessionForUser);
   const subscriptionTier = useUserStore((s) => s.subscriptionTier);
   const getSessionsToday = useUserStore((s) => s.getSessionsToday);
+  const pendingMilestone = useUserStore((s) => s.pendingMilestone);
   const { user } = useAuth();
   const pro = isPro(subscriptionTier);
   const sessionsToday = getSessionsToday();
 
   // Block entry when daily limit already reached for free users.
   const limitReached = !pro && sessionsToday >= FREE_DAILY_SESSION_LIMIT;
+
+  // Fire milestone haptic when a new milestone gets queued.
+  useEffect(() => {
+    if (pendingMilestone !== null) haptics.milestone();
+  }, [pendingMilestone]);
 
   const [cards, setCards] = useState<Card[]>(() => buildDeck());
   const [revealed, setRevealed] = useState<number[]>([]);
@@ -126,6 +135,14 @@ function Page() {
     const accuracy = attempts === 0 ? 100 : Math.round((TOTAL_PAIRS / attempts) * 100);
     const key = Date.now();
     setSavedKey(key);
+    // Achievement toast
+    toast(
+      <span className="flex items-center gap-2 text-[13px] font-bold">
+        <span className="text-[16px]">🧠</span>
+        <span>Memory +{Math.max(1, Math.round(score / 50))}pts</span>
+      </span>,
+      { duration: 2500, position: "bottom-center" },
+    );
     const record = {
       gameId: "memory-matrix",
       score,
@@ -175,12 +192,14 @@ function Page() {
           setMatches((m) => m + 1);
           setScore((s) => s + 50);
           setRevealed([]);
+          haptics.match();
           toast.success("Match!", { duration: 1200 });
         }, 350);
       } else {
         addTimeout(() => {
           setRevealed([]);
           setScore((s) => Math.max(0, s - 5));
+          haptics.miss();
         }, 800);
       }
     }
@@ -213,7 +232,7 @@ function Page() {
 
   if (limitReached) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 pt-12 text-center">
+      <MotionScreen className="flex min-h-[70vh] flex-col items-center justify-center px-6 pt-12 text-center">
         <div className="text-[48px]">🌙</div>
         <h1 className="mt-3 text-[22px] font-black" style={{ letterSpacing: "-0.5px" }}>
           Daily limit reached
@@ -230,12 +249,12 @@ function Page() {
             Come back tomorrow
           </GhostButton>
         </div>
-      </div>
+      </MotionScreen>
     );
   }
 
   return (
-    <div className="relative min-h-screen px-5 pt-12 pb-8">
+    <MotionScreen className="relative min-h-screen px-5 pt-12 pb-8">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <Link
@@ -318,12 +337,22 @@ function Page() {
       </div>
 
       {/* Complete overlay */}
-      {complete && (
-        <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center">
-          <div
-            className="w-full max-w-md rounded-t-[28px] border border-white/[0.07] bg-[#0D1226] p-6 sm:rounded-[28px]"
-            style={{ animation: "fadeUp 350ms ease-out" }}
+      <AnimatePresence>
+        {complete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center"
           >
+            <motion.div
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 280, damping: 26 }}
+              className="w-full max-w-md rounded-t-[28px] border border-white/[0.07] bg-[#0D1226] p-6 sm:rounded-[28px]"
+            >
             <h2
               className="text-center text-[24px] font-black leading-tight"
               style={{ letterSpacing: "-0.6px" }}
@@ -373,9 +402,10 @@ function Page() {
               </PrimaryButton>
               <GhostButton onClick={reset}>Play again</GhostButton>
             </div>
-          </div>
-        </div>
-      )}
-    </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </MotionScreen>
   );
 }
