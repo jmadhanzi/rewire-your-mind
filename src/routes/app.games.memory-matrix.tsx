@@ -41,6 +41,7 @@ function formatTime(sec: number) {
 function Page() {
   const navigate = useNavigate();
   const addSession = useUserStore((s) => s.addSession);
+  const recordSessionForUser = useUserStore((s) => s.recordSessionForUser);
   const { user } = useAuth();
 
   const [cards, setCards] = useState<Card[]>(() => buildDeck());
@@ -116,15 +117,17 @@ function Page() {
     const accuracy = attempts === 0 ? 100 : Math.round((TOTAL_PAIRS / attempts) * 100);
     const key = Date.now();
     setSavedKey(key);
-    addSession({
+    const record = {
       gameId: "memory-matrix",
       score,
       accuracy,
       durationSec: seconds,
       skill: "Memory",
       at: key,
-    });
+    };
     if (user) {
+      // Updates local store + streak + profile
+      recordSessionForUser(user.id, record).catch((e) => console.error(e));
       supabase
         .from("game_sessions")
         .insert({
@@ -138,8 +141,10 @@ function Page() {
         .then(({ error }) => {
           if (error) console.error("save session", error);
         });
+    } else {
+      addSession(record);
     }
-  }, [complete, savedKey, attempts, score, seconds, addSession, user]);
+  }, [complete, savedKey, attempts, score, seconds, addSession, recordSessionForUser, user]);
 
   const handleTap = (idx: number) => {
     if (previewing || complete) return;

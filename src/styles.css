@@ -168,3 +168,26 @@
     transform: translateY(0);
   }
 }
+
+@keyframes streakBounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-18px) scale(1.08);
+  }
+  60% {
+    transform: translateY(0) scale(0.96);
+  }
+}
+
+@keyframes flamePulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 18px rgba(245, 197, 24, 0.55));
+  }
+  50% {
+    filter: drop-shadow(0 0 36px rgba(255, 107, 107, 0.85));
+  }
+}

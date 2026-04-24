@@ -105,8 +105,11 @@ export type Database = {
           goals: string[]
           id: string
           identity_type: string | null
+          last_session_date: string | null
           longest_streak: number
           onboarding_complete: boolean
+          streak_savers_remaining: number
+          streak_savers_reset_at: string
           subscription_tier: string
           time_commitment: string | null
           total_sessions: number
@@ -120,8 +123,11 @@ export type Database = {
           goals?: string[]
           id: string
           identity_type?: string | null
+          last_session_date?: string | null
           longest_streak?: number
           onboarding_complete?: boolean
+          streak_savers_remaining?: number
+          streak_savers_reset_at?: string
           subscription_tier?: string
           time_commitment?: string | null
           total_sessions?: number
@@ -135,8 +141,11 @@ export type Database = {
           goals?: string[]
           id?: string
           identity_type?: string | null
+          last_session_date?: string | null
           longest_streak?: number
           onboarding_complete?: boolean
+          streak_savers_remaining?: number
+          streak_savers_reset_at?: string
           subscription_tier?: string
           time_commitment?: string | null
           total_sessions?: number
