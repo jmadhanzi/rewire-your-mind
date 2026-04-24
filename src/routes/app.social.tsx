@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useUserStore } from "@/store/user";
 import { isPro } from "@/lib/freemium";
 import { ProGateSheet } from "@/components/rewire/ProGateSheet";
+import { MotionScreen } from "@/components/rewire/MotionScreen";
 
 export const Route = createFileRoute("/app/social")({
   component: Page,
@@ -43,7 +44,7 @@ function Page() {
     navigate({ to: "/app/games" });
   };
   return (
-    <div className="px-6 pt-12 pb-6">
+    <MotionScreen className="px-6 pt-12 pb-6">
       <h1 className="text-[23px] font-black leading-tight" style={{ letterSpacing: "-0.6px" }}>
         Friends
       </h1>
@@ -133,6 +134,6 @@ function Page() {
         message="Start head-to-head challenges with friends with Rewire Pro. You can still view the leaderboard on free."
         onClose={() => setGateOpen(false)}
       />
-    </div>
+    </MotionScreen>
   );
 }
