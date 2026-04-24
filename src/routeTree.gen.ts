@@ -24,6 +24,7 @@ import { Route as AppProgressRouteImport } from './routes/app.progress'
 import { Route as AppMeRouteImport } from './routes/app.me'
 import { Route as AppHomeRouteImport } from './routes/app.home'
 import { Route as AppGamesRouteImport } from './routes/app.games'
+import { Route as AppGamesGameIdRouteImport } from './routes/app.games.$gameId'
 
 const PaywallRoute = PaywallRouteImport.update({
   id: '/paywall',
@@ -100,12 +101,17 @@ const AppGamesRoute = AppGamesRouteImport.update({
   path: '/games',
   getParentRoute: () => AppRoute,
 } as any)
+const AppGamesGameIdRoute = AppGamesGameIdRouteImport.update({
+  id: '/$gameId',
+  path: '/$gameId',
+  getParentRoute: () => AppGamesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/paywall': typeof PaywallRoute
-  '/app/games': typeof AppGamesRoute
+  '/app/games': typeof AppGamesRouteWithChildren
   '/app/home': typeof AppHomeRoute
   '/app/me': typeof AppMeRoute
   '/app/progress': typeof AppProgressRoute
@@ -117,12 +123,13 @@ export interface FileRoutesByFullPath {
   '/onboarding/processing': typeof OnboardingProcessingRoute
   '/onboarding/profile': typeof OnboardingProfileRoute
   '/onboarding/time': typeof OnboardingTimeRoute
+  '/app/games/$gameId': typeof AppGamesGameIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/paywall': typeof PaywallRoute
-  '/app/games': typeof AppGamesRoute
+  '/app/games': typeof AppGamesRouteWithChildren
   '/app/home': typeof AppHomeRoute
   '/app/me': typeof AppMeRoute
   '/app/progress': typeof AppProgressRoute
@@ -134,13 +141,14 @@ export interface FileRoutesByTo {
   '/onboarding/processing': typeof OnboardingProcessingRoute
   '/onboarding/profile': typeof OnboardingProfileRoute
   '/onboarding/time': typeof OnboardingTimeRoute
+  '/app/games/$gameId': typeof AppGamesGameIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/paywall': typeof PaywallRoute
-  '/app/games': typeof AppGamesRoute
+  '/app/games': typeof AppGamesRouteWithChildren
   '/app/home': typeof AppHomeRoute
   '/app/me': typeof AppMeRoute
   '/app/progress': typeof AppProgressRoute
@@ -152,6 +160,7 @@ export interface FileRoutesById {
   '/onboarding/processing': typeof OnboardingProcessingRoute
   '/onboarding/profile': typeof OnboardingProfileRoute
   '/onboarding/time': typeof OnboardingTimeRoute
+  '/app/games/$gameId': typeof AppGamesGameIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -171,6 +180,7 @@ export interface FileRouteTypes {
     | '/onboarding/processing'
     | '/onboarding/profile'
     | '/onboarding/time'
+    | '/app/games/$gameId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/onboarding/processing'
     | '/onboarding/profile'
     | '/onboarding/time'
+    | '/app/games/$gameId'
   id:
     | '__root__'
     | '/'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/onboarding/processing'
     | '/onboarding/profile'
     | '/onboarding/time'
+    | '/app/games/$gameId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -327,11 +339,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppGamesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/games/$gameId': {
+      id: '/app/games/$gameId'
+      path: '/$gameId'
+      fullPath: '/app/games/$gameId'
+      preLoaderRoute: typeof AppGamesGameIdRouteImport
+      parentRoute: typeof AppGamesRoute
+    }
   }
 }
 
+interface AppGamesRouteChildren {
+  AppGamesGameIdRoute: typeof AppGamesGameIdRoute
+}
+
+const AppGamesRouteChildren: AppGamesRouteChildren = {
+  AppGamesGameIdRoute: AppGamesGameIdRoute,
+}
+
+const AppGamesRouteWithChildren = AppGamesRoute._addFileChildren(
+  AppGamesRouteChildren,
+)
+
 interface AppRouteChildren {
-  AppGamesRoute: typeof AppGamesRoute
+  AppGamesRoute: typeof AppGamesRouteWithChildren
   AppHomeRoute: typeof AppHomeRoute
   AppMeRoute: typeof AppMeRoute
   AppProgressRoute: typeof AppProgressRoute
@@ -339,7 +370,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppGamesRoute: AppGamesRoute,
+  AppGamesRoute: AppGamesRouteWithChildren,
   AppHomeRoute: AppHomeRoute,
   AppMeRoute: AppMeRoute,
   AppProgressRoute: AppProgressRoute,
