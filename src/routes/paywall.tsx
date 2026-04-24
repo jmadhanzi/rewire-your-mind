@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Sparkles, AlertTriangle } from "lucide-react";
 import { PrimaryButton } from "@/components/rewire/PrimaryButton";
 import { cn } from "@/lib/utils";
@@ -66,6 +66,21 @@ function Paywall() {
   const { user } = useAuth();
   const [signupOpen, setSignupOpen] = useState(false);
   const onboarding = useOnboardingStore();
+  const [trialIntent, setTrialIntent] = useState(false);
+
+  // Pre-select annual when arriving from the marketing landing's Pro CTA
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      if (window.localStorage.getItem("trialIntent") === "pro") {
+        setSelectedPlan("annual");
+        setTrialIntent(true);
+        window.localStorage.removeItem("trialIntent");
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const current = PLANS.find((p) => p.id === selectedPlan)!;
 
@@ -131,6 +146,11 @@ function Paywall() {
           <span className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-[#00D9A3]/40 bg-[#00D9A3]/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-[#00D9A3] shadow-[0_0_18px_rgba(0,217,163,0.22)]">
             <Sparkles className="h-3 w-3" /> 847 people started today
           </span>
+          {trialIntent && (
+            <div className="mt-4 rounded-2xl border border-[#7858FF]/40 bg-[#7858FF]/10 px-4 py-3 text-[13px] text-[#A78BFA] shadow-[0_0_24px_rgba(120,88,255,0.25)]">
+              ✨ Your trial starts now — annual selected for best value
+            </div>
+          )}
         </div>
 
         {/* Plans */}
