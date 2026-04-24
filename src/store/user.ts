@@ -34,9 +34,13 @@ type State = {
   streakSaversRemaining: number;
   pendingMilestone: number | null;
   pendingStreakReset: { previousStreak: number } | null;
+  subscriptionTier: string;
+  sessionsToday: number;
+  sessionsTodayDate: string | null;
   setStreak: (n: number) => void;
   setBrainScores: (s: Partial<BrainScores>) => void;
   addSession: (s: SessionRecord) => void;
+  getSessionsToday: () => number;
   recordSessionForUser: (userId: string, s: SessionRecord) => Promise<void>;
   evaluateStreakForUser: (userId: string) => Promise<void>;
   useStreakSaver: (userId: string) => Promise<boolean>;
@@ -62,6 +66,9 @@ export const useUserStore = create<State>()(
       streakSaversRemaining: 2,
       pendingMilestone: null,
       pendingStreakReset: null,
+      subscriptionTier: "free",
+      sessionsToday: 0,
+      sessionsTodayDate: null,
       setStreak: (streak) => set({ streak }),
       setBrainScores: (s) =>
         set((state) => ({ brainScores: { ...state.brainScores, ...s } })),
@@ -70,6 +77,11 @@ export const useUserStore = create<State>()(
           sessionHistory: [s, ...state.sessionHistory].slice(0, 50),
           totalSessions: state.totalSessions + 1,
         })),
+      getSessionsToday: () => {
+        const st = get();
+        const today = todayKey();
+        return st.sessionsTodayDate === today ? st.sessionsToday : 0;
+      },
       recordSessionForUser: async (userId, s) => {
         const today = todayKey();
         const state = get();
@@ -78,12 +90,16 @@ export const useUserStore = create<State>()(
           state.lastSessionDate,
           today,
         );
+        const sameDay = state.sessionsTodayDate === today;
+        const newSessionsToday = (sameDay ? state.sessionsToday : 0) + 1;
         set((st) => ({
           sessionHistory: [s, ...st.sessionHistory].slice(0, 50),
           totalSessions: st.totalSessions + 1,
           streak: newStreak,
           lastSessionDate: today,
           pendingMilestone: milestone ?? st.pendingMilestone,
+          sessionsToday: newSessionsToday,
+          sessionsTodayDate: today,
         }));
         const { error } = await supabase
           .from("profiles")
@@ -166,6 +182,7 @@ export const useUserStore = create<State>()(
           lastSessionDate: profile?.last_session_date ?? state.lastSessionDate,
           streakSaversRemaining:
             profile?.streak_savers_remaining ?? state.streakSaversRemaining,
+          subscriptionTier: profile?.subscription_tier ?? state.subscriptionTier,
           brainScores: brain
             ? {
                 focus: brain.focus,
@@ -202,6 +219,9 @@ export const useUserStore = create<State>()(
           streakSaversRemaining: 2,
           pendingMilestone: null,
           pendingStreakReset: null,
+          subscriptionTier: "free",
+          sessionsToday: 0,
+          sessionsTodayDate: null,
         }),
     }),
     { name: "rewire-user" },
