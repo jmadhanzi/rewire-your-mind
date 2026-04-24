@@ -3,6 +3,7 @@ import { ArrowRight, Target, Brain, Zap } from "lucide-react";
 import { AppHeader } from "@/components/rewire/AppHeader";
 import { useUserStore } from "@/store/user";
 import { useOnboardingStore } from "@/store/onboarding";
+import { FREE_DAILY_SESSION_LIMIT, isPro } from "@/lib/freemium";
 
 export const Route = createFileRoute("/app/home")({
   component: Page,
@@ -13,6 +14,10 @@ function Page() {
   const { currentDay, programProgress, totalSessions, focusImprovement, brainScores } =
     useUserStore();
   const goals = useOnboardingStore((s) => s.goals);
+  const subscriptionTier = useUserStore((s) => s.subscriptionTier);
+  const getSessionsToday = useUserStore((s) => s.getSessionsToday);
+  const pro = isPro(subscriptionTier);
+  const sessionsToday = getSessionsToday();
 
   const totalDays = 21;
   const focusArea =
@@ -29,6 +34,16 @@ function Page() {
       <AppHeader greeting="Good morning 👋" title="Ready to rewire?" />
 
       <div className="px-6 pt-7 space-y-4">
+        {!pro && (
+          <div className="flex items-center justify-between rounded-full border border-white/[0.07] bg-[#131A2E] px-3.5 py-2">
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-white/40">
+              Free plan
+            </span>
+            <span className="text-[12px] font-bold tabular-nums text-white/80">
+              {sessionsToday}/{FREE_DAILY_SESSION_LIMIT} sessions today
+            </span>
+          </div>
+        )}
         {/* Today's focus card */}
         <div className="rounded-[22px] border border-white/[0.07] bg-[#131A2E] p-5">
           <div className="flex items-center justify-between">
