@@ -8,6 +8,8 @@ import { GhostButton } from "@/components/rewire/GhostButton";
 import { useUserStore } from "@/store/user";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { AdBanner } from "@/components/rewire/AdBanner";
+import { FREE_AD_EVERY_N_SESSIONS, FREE_DAILY_SESSION_LIMIT, isPro, timeUntilMidnight } from "@/lib/freemium";
 
 export const Route = createFileRoute("/app/games/memory-matrix")({
   component: Page,
@@ -42,7 +44,14 @@ function Page() {
   const navigate = useNavigate();
   const addSession = useUserStore((s) => s.addSession);
   const recordSessionForUser = useUserStore((s) => s.recordSessionForUser);
+  const subscriptionTier = useUserStore((s) => s.subscriptionTier);
+  const getSessionsToday = useUserStore((s) => s.getSessionsToday);
   const { user } = useAuth();
+  const pro = isPro(subscriptionTier);
+  const sessionsToday = getSessionsToday();
+
+  // Block entry when daily limit already reached for free users.
+  const limitReached = !pro && sessionsToday >= FREE_DAILY_SESSION_LIMIT;
 
   const [cards, setCards] = useState<Card[]>(() => buildDeck());
   const [revealed, setRevealed] = useState<number[]>([]);
@@ -199,6 +208,32 @@ function Page() {
     [attempts],
   );
 
+  // After this completion, count of sessions today (including the one we just logged).
+  const showAd = !pro && complete && sessionsToday > 0 && sessionsToday % FREE_AD_EVERY_N_SESSIONS === 0;
+
+  if (limitReached) {
+    return (
+      <div className="flex min-h-[70vh] flex-col items-center justify-center px-6 pt-12 text-center">
+        <div className="text-[48px]">🌙</div>
+        <h1 className="mt-3 text-[22px] font-black" style={{ letterSpacing: "-0.5px" }}>
+          Daily limit reached
+        </h1>
+        <p className="mt-2 max-w-[280px] text-[13px] text-white/60">
+          You've completed your {FREE_DAILY_SESSION_LIMIT} free sessions today. Resets in{" "}
+          <span className="font-bold text-white">{timeUntilMidnight()}</span>.
+        </p>
+        <div className="mt-6 w-full max-w-xs space-y-3">
+          <PrimaryButton onClick={() => navigate({ to: "/paywall" })}>
+            Upgrade for unlimited →
+          </PrimaryButton>
+          <GhostButton onClick={() => navigate({ to: "/app/home" })}>
+            Come back tomorrow
+          </GhostButton>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-screen px-5 pt-12 pb-8">
       {/* Header */}
@@ -329,6 +364,8 @@ function Page() {
                 Memory
               </span>
             </div>
+
+            {showAd && <AdBanner />}
 
             <div className="mt-6 space-y-3">
               <PrimaryButton onClick={() => navigate({ to: "/app/games" })}>
