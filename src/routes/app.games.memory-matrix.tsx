@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { PrimaryButton } from "@/components/rewire/PrimaryButton";
 import { GhostButton } from "@/components/rewire/GhostButton";
 import { useUserStore } from "@/store/user";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/app/games/memory-matrix")({
   component: Page,
@@ -39,6 +41,7 @@ function formatTime(sec: number) {
 function Page() {
   const navigate = useNavigate();
   const addSession = useUserStore((s) => s.addSession);
+  const { user } = useAuth();
 
   const [cards, setCards] = useState<Card[]>(() => buildDeck());
   const [revealed, setRevealed] = useState<number[]>([]);
@@ -121,7 +124,22 @@ function Page() {
       skill: "Memory",
       at: key,
     });
-  }, [complete, savedKey, attempts, score, seconds, addSession]);
+    if (user) {
+      supabase
+        .from("game_sessions")
+        .insert({
+          user_id: user.id,
+          game_id: "memory-matrix",
+          score,
+          accuracy,
+          duration_seconds: seconds,
+          cognitive_domain: "Memory",
+        })
+        .then(({ error }) => {
+          if (error) console.error("save session", error);
+        });
+    }
+  }, [complete, savedKey, attempts, score, seconds, addSession, user]);
 
   const handleTap = (idx: number) => {
     if (previewing || complete) return;

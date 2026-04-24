@@ -1,6 +1,8 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
+import { useUserStore } from "@/store/user";
 
 export const Route = createFileRoute("/app")({
   component: AppLayout,
@@ -17,6 +19,14 @@ const TABS = [
 function AppLayout() {
   const { pathname } = useLocation();
   const [pressed, setPressed] = useState<string | null>(null);
+  const { user } = useAuth();
+  const syncFromSupabase = useUserStore((s) => s.syncFromSupabase);
+
+  useEffect(() => {
+    if (user) {
+      syncFromSupabase(user.id).catch(() => {});
+    }
+  }, [user, syncFromSupabase]);
 
   // clear press state after animation
   useEffect(() => {

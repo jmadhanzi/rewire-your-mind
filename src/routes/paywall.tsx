@@ -3,6 +3,10 @@ import { useState } from "react";
 import { Check, Sparkles, AlertTriangle } from "lucide-react";
 import { PrimaryButton } from "@/components/rewire/PrimaryButton";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/use-auth";
+import { SignupModal } from "@/components/rewire/SignupModal";
+import { useOnboardingStore } from "@/store/onboarding";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/paywall")({
   component: Paywall,
@@ -59,8 +63,55 @@ const FEATURES = [
 function Paywall() {
   const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState<PlanId>("annual");
+  const { user } = useAuth();
+  const [signupOpen, setSignupOpen] = useState(false);
+  const onboarding = useOnboardingStore();
 
   const current = PLANS.find((p) => p.id === selectedPlan)!;
+
+  const persistOnboardingFor = async (userId: string) => {
+    await supabase
+      .from("profiles")
+      .update({
+        identity_type: onboarding.identity || null,
+        goals: onboarding.goals,
+        time_commitment: onboarding.timeCommitment || null,
+        baseline_score: onboarding.baselineScore,
+        onboarding_complete: true,
+      })
+      .eq("id", userId);
+
+    const bp = onboarding.brainProfile;
+    if (bp && (bp.focus || bp.memory || bp.speed || bp.archetype)) {
+      await supabase.from("brain_scores").insert({
+        user_id: userId,
+        focus: bp.focus ?? 0,
+        memory: bp.memory ?? 0,
+        speed: bp.speed ?? 0,
+        logic: 0,
+        calm: 0,
+      });
+    }
+  };
+
+  const handleStart = async () => {
+    if (!user) {
+      setSignupOpen(true);
+      return;
+    }
+    await persistOnboardingFor(user.id);
+    navigate({ to: "/app/home" });
+  };
+
+  const handleSignupSuccess = async () => {
+    setSignupOpen(false);
+    // Wait for session to populate, then persist onboarding
+    const { data } = await supabase.auth.getUser();
+    if (data.user) {
+      await persistOnboardingFor(data.user.id);
+    }
+    navigate({ to: "/app/home" });
+  };
 
   return (
     <main className="min-h-screen bg-[#07091A] text-white animate-[fadeUp_350ms_ease]">
@@ -164,7 +215,7 @@ function Paywall() {
 
         {/* CTA */}
         <div className="mt-6 pt-2">
-          <PrimaryButton onClick={() => navigate({ to: "/app/home" })}>
+          <PrimaryButton onClick={handleStart}>
             Start 7-day free trial →
           </PrimaryButton>
           <p className="mt-3 text-center text-[12px] text-white/50">
@@ -179,6 +230,13 @@ function Paywall() {
           </div>
         </div>
       </div>
+      <SignupModal
+        open={signupOpen}
+        onClose={() => setSignupOpen(false)}
+        onSuccess={handleSignupSuccess}
+        title="Create your account to start"
+        subtitle="We'll save your program and start your 7-day free trial"
+      />
     </main>
   );
 }
