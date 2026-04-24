@@ -1,6 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUserStore } from "@/store/user";
+import { isFreeGame, isPro, FREE_DAILY_SESSION_LIMIT } from "@/lib/freemium";
+import { ProGateSheet } from "@/components/rewire/ProGateSheet";
 
 export const Route = createFileRoute("/app/games")({
   component: Page,
@@ -34,17 +38,47 @@ const CATEGORIES: Category[] = ["All", "Focus", "Memory", "Speed", "Logic", "Cal
 function Page() {
   const navigate = useNavigate();
   const [active, setActive] = useState<Category>("All");
+  const subscriptionTier = useUserStore((s) => s.subscriptionTier);
+  const getSessionsToday = useUserStore((s) => s.getSessionsToday);
+  const pro = isPro(subscriptionTier);
+  const sessionsToday = getSessionsToday();
+  const limitReached = !pro && sessionsToday >= FREE_DAILY_SESSION_LIMIT;
+  const [gate, setGate] = useState<{ title: string; message: string } | null>(null);
 
   const filtered = useMemo(
     () => (active === "All" ? GAMES : GAMES.filter((g) => g.category === active)),
     [active],
   );
 
+  const openGame = (gameId: string) => {
+    if (!pro && !isFreeGame(gameId)) {
+      setGate({
+        title: "This game is Pro",
+        message: "Unlock all 6 games and unlimited daily sessions with Rewire Pro.",
+      });
+      return;
+    }
+    if (limitReached) {
+      setGate({
+        title: "Daily limit reached",
+        message: `You've completed your ${FREE_DAILY_SESSION_LIMIT} free sessions today. Upgrade for unlimited.`,
+      });
+      return;
+    }
+    navigate({ to: "/app/games/$gameId", params: { gameId } });
+  };
+
   return (
     <div className="px-6 pt-12 pb-6">
       <h1 className="text-[23px] font-black leading-tight" style={{ letterSpacing: "-0.6px" }}>
         Games
       </h1>
+
+      {!pro && (
+        <p className="mt-1 text-[12px] text-white/40">
+          {sessionsToday}/{FREE_DAILY_SESSION_LIMIT} sessions today
+        </p>
+      )}
 
       {/* Featured */}
       <div className="mt-5 flex items-center gap-3 rounded-[20px] border border-[#00D9A3]/40 bg-[#00D9A3]/15 p-3">
@@ -61,7 +95,7 @@ function Page() {
           </p>
         </div>
         <button
-          onClick={() => navigate({ to: "/app/games/$gameId", params: { gameId: "memory-matrix" } })}
+          onClick={() => openGame("memory-matrix")}
           className="shrink-0 rounded-[13px] bg-[#00D9A3] px-4 py-2.5 text-[13px] font-bold text-[#041A10] transition-transform active:scale-[0.97]"
         >
           Play
@@ -93,32 +127,50 @@ function Page() {
 
       {/* Grid */}
       <div className="mt-5 grid grid-cols-2 gap-3">
-        {filtered.map((g) => (
-          <button
-            key={g.id}
-            onClick={() => navigate({ to: "/app/games/$gameId", params: { gameId: g.id } })}
-            className="flex flex-col rounded-[18px] border border-white/[0.07] bg-[#131A2E] p-3 text-left transition-transform active:scale-[0.98]"
-          >
-            <div
-              className="flex h-[44px] w-[44px] items-center justify-center rounded-[13px] text-[22px]"
-              style={{ backgroundColor: `${g.color}33` }}
+        {filtered.map((g) => {
+          const locked = !pro && !isFreeGame(g.id);
+          return (
+            <button
+              key={g.id}
+              onClick={() => openGame(g.id)}
+              className={cn(
+                "relative flex flex-col rounded-[18px] border border-white/[0.07] bg-[#131A2E] p-3 text-left transition-transform active:scale-[0.98]",
+                locked && "opacity-60",
+              )}
             >
-              {g.icon}
-            </div>
-            <h3 className="mt-3 text-[13px] font-bold leading-tight">{g.name}</h3>
-            <p className="mt-1 text-[11px] leading-snug text-white/40">{g.desc}</p>
-            <div className="mt-3 flex items-center justify-between">
-              <span className="text-[11px] font-medium text-white/50">{g.minutes} min</span>
-              <span
-                className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider"
-                style={{ backgroundColor: `${g.color}33`, color: g.color }}
+              {locked && (
+                <span className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-full border border-[#7858FF]/40 bg-[#7858FF]/20 text-[#A78BFA] shadow-[0_0_14px_rgba(120,88,255,0.45)]">
+                  <Lock className="h-3.5 w-3.5" />
+                </span>
+              )}
+              <div
+                className="flex h-[44px] w-[44px] items-center justify-center rounded-[13px] text-[22px]"
+                style={{ backgroundColor: `${g.color}33` }}
               >
-                {g.difficulty}
-              </span>
-            </div>
-          </button>
-        ))}
+                {g.icon}
+              </div>
+              <h3 className="mt-3 text-[13px] font-bold leading-tight">{g.name}</h3>
+              <p className="mt-1 text-[11px] leading-snug text-white/40">{g.desc}</p>
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-[11px] font-medium text-white/50">{g.minutes} min</span>
+                <span
+                  className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+                  style={{ backgroundColor: `${g.color}33`, color: g.color }}
+                >
+                  {locked ? "Pro" : g.difficulty}
+                </span>
+              </div>
+            </button>
+          );
+        })}
       </div>
+
+      <ProGateSheet
+        open={gate !== null}
+        title={gate?.title}
+        message={gate?.message}
+        onClose={() => setGate(null)}
+      />
     </div>
   );
 }
