@@ -49,12 +49,18 @@ function Page() {
   const recordSessionForUser = useUserStore((s) => s.recordSessionForUser);
   const subscriptionTier = useUserStore((s) => s.subscriptionTier);
   const getSessionsToday = useUserStore((s) => s.getSessionsToday);
+  const pendingMilestone = useUserStore((s) => s.pendingMilestone);
   const { user } = useAuth();
   const pro = isPro(subscriptionTier);
   const sessionsToday = getSessionsToday();
 
   // Block entry when daily limit already reached for free users.
   const limitReached = !pro && sessionsToday >= FREE_DAILY_SESSION_LIMIT;
+
+  // Fire milestone haptic when a new milestone gets queued.
+  useEffect(() => {
+    if (pendingMilestone !== null) haptics.milestone();
+  }, [pendingMilestone]);
 
   const [cards, setCards] = useState<Card[]>(() => buildDeck());
   const [revealed, setRevealed] = useState<number[]>([]);
