@@ -6,6 +6,8 @@ import { todayKey } from "@/lib/streak";
 import { motion } from "framer-motion";
 import { MotionScreen } from "@/components/rewire/MotionScreen";
 import { useCountUp } from "@/hooks/use-count-up";
+import { ProgressSkeleton } from "@/components/rewire/skeletons/ProgressSkeleton";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/app/progress")({
   component: Page,
@@ -32,6 +34,8 @@ function Page() {
   const sessionHistory = useUserStore((s) => s.sessionHistory);
   const streak = useUserStore((s) => s.streak);
   const totalSessions = useUserStore((s) => s.totalSessions);
+  const hydrated = useUserStore((s) => s.hydrated);
+  const { user, loading: authLoading } = useAuth();
 
   // Build last-7-day buckets from session history (local time)
   const { week, days, accuracy, sessionsCount } = useMemo(() => {
@@ -72,6 +76,14 @@ function Page() {
   const streakDisplay = useCountUp(streak);
   const accuracyDisplay = useCountUp(accuracy);
   const sessionsDisplay = useCountUp(sessionsCount);
+
+  if (authLoading || (user && !hydrated)) {
+    return (
+      <MotionScreen>
+        <ProgressSkeleton />
+      </MotionScreen>
+    );
+  }
 
   return (
     <MotionScreen className="px-6 pt-12 pb-6">

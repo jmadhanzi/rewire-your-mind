@@ -5,6 +5,8 @@ import { useUserStore } from "@/store/user";
 import { useOnboardingStore } from "@/store/onboarding";
 import { FREE_DAILY_SESSION_LIMIT, isPro } from "@/lib/freemium";
 import { MotionScreen } from "@/components/rewire/MotionScreen";
+import { HomeSkeleton } from "@/components/rewire/skeletons/HomeSkeleton";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/app/home")({
   component: Page,
@@ -17,8 +19,18 @@ function Page() {
   const goals = useOnboardingStore((s) => s.goals);
   const subscriptionTier = useUserStore((s) => s.subscriptionTier);
   const getSessionsToday = useUserStore((s) => s.getSessionsToday);
+  const hydrated = useUserStore((s) => s.hydrated);
+  const { user, loading: authLoading } = useAuth();
   const pro = isPro(subscriptionTier);
   const sessionsToday = getSessionsToday();
+
+  if (authLoading || (user && !hydrated)) {
+    return (
+      <MotionScreen>
+        <HomeSkeleton />
+      </MotionScreen>
+    );
+  }
 
   const totalDays = 21;
   const focusArea =

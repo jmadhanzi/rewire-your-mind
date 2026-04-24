@@ -7,6 +7,8 @@ import { isFreeGame, isPro, FREE_DAILY_SESSION_LIMIT } from "@/lib/freemium";
 import { ProGateSheet } from "@/components/rewire/ProGateSheet";
 import { MotionScreen } from "@/components/rewire/MotionScreen";
 import { motion } from "framer-motion";
+import { GamesSkeleton } from "@/components/rewire/skeletons/GamesSkeleton";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/app/games")({
   component: Page,
@@ -42,6 +44,8 @@ function Page() {
   const [active, setActive] = useState<Category>("All");
   const subscriptionTier = useUserStore((s) => s.subscriptionTier);
   const getSessionsToday = useUserStore((s) => s.getSessionsToday);
+  const hydrated = useUserStore((s) => s.hydrated);
+  const { user, loading: authLoading } = useAuth();
   const pro = isPro(subscriptionTier);
   const sessionsToday = getSessionsToday();
   const limitReached = !pro && sessionsToday >= FREE_DAILY_SESSION_LIMIT;
@@ -51,6 +55,14 @@ function Page() {
     () => (active === "All" ? GAMES : GAMES.filter((g) => g.category === active)),
     [active],
   );
+
+  if (authLoading || (user && !hydrated)) {
+    return (
+      <MotionScreen>
+        <GamesSkeleton />
+      </MotionScreen>
+    );
+  }
 
   const openGame = (gameId: string) => {
     if (!pro && !isFreeGame(gameId)) {
