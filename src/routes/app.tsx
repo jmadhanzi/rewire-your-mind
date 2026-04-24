@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserStore } from "@/store/user";
+import { StreakCelebration } from "@/components/rewire/StreakCelebration";
+import { StreakSaverModal } from "@/components/rewire/StreakSaverModal";
 
 export const Route = createFileRoute("/app")({
   component: AppLayout,
@@ -21,12 +23,21 @@ function AppLayout() {
   const [pressed, setPressed] = useState<string | null>(null);
   const { user } = useAuth();
   const syncFromSupabase = useUserStore((s) => s.syncFromSupabase);
+  const evaluateStreakForUser = useUserStore((s) => s.evaluateStreakForUser);
+  const useStreakSaver = useUserStore((s) => s.useStreakSaver);
+  const dismissStreakReset = useUserStore((s) => s.dismissStreakReset);
+  const clearMilestone = useUserStore((s) => s.clearMilestone);
+  const pendingMilestone = useUserStore((s) => s.pendingMilestone);
+  const pendingStreakReset = useUserStore((s) => s.pendingStreakReset);
+  const streakSaversRemaining = useUserStore((s) => s.streakSaversRemaining);
 
   useEffect(() => {
     if (user) {
-      syncFromSupabase(user.id).catch(() => {});
+      syncFromSupabase(user.id)
+        .then(() => evaluateStreakForUser(user.id))
+        .catch(() => {});
     }
-  }, [user, syncFromSupabase]);
+  }, [user, syncFromSupabase, evaluateStreakForUser]);
 
   // clear press state after animation
   useEffect(() => {
@@ -81,6 +92,18 @@ function AppLayout() {
           })}
         </div>
       </nav>
+
+      {pendingStreakReset && (
+        <StreakSaverModal
+          streak={pendingStreakReset.previousStreak}
+          saversRemaining={streakSaversRemaining}
+          onUseSaver={() => user && useStreakSaver(user.id)}
+          onLetGo={() => user && dismissStreakReset(user.id)}
+        />
+      )}
+      {pendingMilestone !== null && (
+        <StreakCelebration streak={pendingMilestone} onDismiss={clearMilestone} />
+      )}
     </div>
   );
 }
