@@ -8,6 +8,8 @@ import { useUserStore } from "@/store/user";
 import { isPro } from "@/lib/freemium";
 import { ProGateSheet } from "@/components/rewire/ProGateSheet";
 import { MotionScreen } from "@/components/rewire/MotionScreen";
+import { SocialSkeleton } from "@/components/rewire/skeletons/SocialSkeleton";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/app/social")({
   component: Page,
@@ -35,6 +37,16 @@ function Page() {
   const subscriptionTier = useUserStore((s) => s.subscriptionTier);
   const pro = isPro(subscriptionTier);
   const [gateOpen, setGateOpen] = useState(false);
+  const hydrated = useUserStore((s) => s.hydrated);
+  const { user, loading: authLoading } = useAuth();
+
+  if (authLoading || (user && !hydrated)) {
+    return (
+      <MotionScreen>
+        <SocialSkeleton />
+      </MotionScreen>
+    );
+  }
 
   const handleChallenge = () => {
     if (!pro) {
