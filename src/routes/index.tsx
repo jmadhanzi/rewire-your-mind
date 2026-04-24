@@ -523,8 +523,10 @@ function ProblemSection() {
 /* ─────────────────────────── SOCIAL PROOF ─────────────────────────── */
 
 function SocialProof() {
-  const [count, setCount] = useState(() => 800 + Math.floor(Math.random() * 401));
+  // Start with a stable SSR-safe value, then randomize after mount to avoid hydration mismatch
+  const [count, setCount] = useState(1000);
   useEffect(() => {
+    setCount(800 + Math.floor(Math.random() * 401));
     let cancelled = false;
     const tick = () => {
       if (cancelled) return;
