@@ -25,6 +25,7 @@ import { Route as AppProgressRouteImport } from './routes/app.progress'
 import { Route as AppMeRouteImport } from './routes/app.me'
 import { Route as AppHomeRouteImport } from './routes/app.home'
 import { Route as AppGamesRouteImport } from './routes/app.games'
+import { Route as AppCoachRouteImport } from './routes/app.coach'
 import { Route as AppGamesMemoryMatrixRouteImport } from './routes/app.games.memory-matrix'
 import { Route as AppGamesGameIdRouteImport } from './routes/app.games.$gameId'
 
@@ -108,6 +109,11 @@ const AppGamesRoute = AppGamesRouteImport.update({
   path: '/games',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCoachRoute = AppCoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppGamesMemoryMatrixRoute = AppGamesMemoryMatrixRouteImport.update({
   id: '/memory-matrix',
   path: '/memory-matrix',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/paywall': typeof PaywallRoute
+  '/app/coach': typeof AppCoachRoute
   '/app/games': typeof AppGamesRouteWithChildren
   '/app/home': typeof AppHomeRoute
   '/app/me': typeof AppMeRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/paywall': typeof PaywallRoute
+  '/app/coach': typeof AppCoachRoute
   '/app/games': typeof AppGamesRouteWithChildren
   '/app/home': typeof AppHomeRoute
   '/app/me': typeof AppMeRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/paywall': typeof PaywallRoute
+  '/app/coach': typeof AppCoachRoute
   '/app/games': typeof AppGamesRouteWithChildren
   '/app/home': typeof AppHomeRoute
   '/app/me': typeof AppMeRoute
@@ -187,6 +196,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/paywall'
+    | '/app/coach'
     | '/app/games'
     | '/app/home'
     | '/app/me'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/paywall'
+    | '/app/coach'
     | '/app/games'
     | '/app/home'
     | '/app/me'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/login'
     | '/paywall'
+    | '/app/coach'
     | '/app/games'
     | '/app/home'
     | '/app/me'
@@ -371,6 +383,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppGamesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/coach': {
+      id: '/app/coach'
+      path: '/coach'
+      fullPath: '/app/coach'
+      preLoaderRoute: typeof AppCoachRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/games/memory-matrix': {
       id: '/app/games/memory-matrix'
       path: '/memory-matrix'
@@ -403,6 +422,7 @@ const AppGamesRouteWithChildren = AppGamesRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
+  AppCoachRoute: typeof AppCoachRoute
   AppGamesRoute: typeof AppGamesRouteWithChildren
   AppHomeRoute: typeof AppHomeRoute
   AppMeRoute: typeof AppMeRoute
@@ -411,6 +431,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppCoachRoute: AppCoachRoute,
   AppGamesRoute: AppGamesRouteWithChildren,
   AppHomeRoute: AppHomeRoute,
   AppMeRoute: AppMeRoute,
@@ -436,12 +457,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

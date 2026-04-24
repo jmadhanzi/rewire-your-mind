@@ -13,8 +13,8 @@ export const Route = createFileRoute("/app")({
 const TABS = [
   { to: "/app/home", label: "Home", icon: "⚡" },
   { to: "/app/games", label: "Games", icon: "🎮" },
+  { to: "/app/coach", label: "Coach", icon: "✨" },
   { to: "/app/progress", label: "Progress", icon: "📊" },
-  { to: "/app/social", label: "Friends", icon: "👥" },
   { to: "/app/me", label: "Me", icon: "👤" },
 ] as const;
 
