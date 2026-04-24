@@ -14,7 +14,136 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      brain_scores: {
+        Row: {
+          calm: number
+          focus: number
+          id: string
+          logic: number
+          memory: number
+          recorded_at: string
+          speed: number
+          user_id: string
+        }
+        Insert: {
+          calm?: number
+          focus?: number
+          id?: string
+          logic?: number
+          memory?: number
+          recorded_at?: string
+          speed?: number
+          user_id: string
+        }
+        Update: {
+          calm?: number
+          focus?: number
+          id?: string
+          logic?: number
+          memory?: number
+          recorded_at?: string
+          speed?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brain_scores_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_sessions: {
+        Row: {
+          accuracy: number
+          cognitive_domain: string | null
+          duration_seconds: number
+          game_id: string
+          id: string
+          played_at: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          accuracy?: number
+          cognitive_domain?: string | null
+          duration_seconds?: number
+          game_id: string
+          id?: string
+          played_at?: string
+          score?: number
+          user_id: string
+        }
+        Update: {
+          accuracy?: number
+          cognitive_domain?: string | null
+          duration_seconds?: number
+          game_id?: string
+          id?: string
+          played_at?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          baseline_score: number | null
+          created_at: string
+          current_streak: number
+          display_name: string | null
+          goals: string[]
+          id: string
+          identity_type: string | null
+          longest_streak: number
+          onboarding_complete: boolean
+          subscription_tier: string
+          time_commitment: string | null
+          total_sessions: number
+          trial_ends_at: string | null
+        }
+        Insert: {
+          baseline_score?: number | null
+          created_at?: string
+          current_streak?: number
+          display_name?: string | null
+          goals?: string[]
+          id: string
+          identity_type?: string | null
+          longest_streak?: number
+          onboarding_complete?: boolean
+          subscription_tier?: string
+          time_commitment?: string | null
+          total_sessions?: number
+          trial_ends_at?: string | null
+        }
+        Update: {
+          baseline_score?: number | null
+          created_at?: string
+          current_streak?: number
+          display_name?: string | null
+          goals?: string[]
+          id?: string
+          identity_type?: string | null
+          longest_streak?: number
+          onboarding_complete?: boolean
+          subscription_tier?: string
+          time_commitment?: string | null
+          total_sessions?: number
+          trial_ends_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
