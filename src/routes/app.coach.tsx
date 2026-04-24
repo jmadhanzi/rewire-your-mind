@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { ArrowUp, Sparkles, Lock } from "lucide-react";
+import { ArrowUp, Sparkles, Lock, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { MotionScreen } from "@/components/rewire/MotionScreen";
@@ -10,6 +10,7 @@ import { GhostButton } from "@/components/rewire/GhostButton";
 import { useUserStore } from "@/store/user";
 import { isPro } from "@/lib/freemium";
 import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/app/coach")({
@@ -36,12 +37,59 @@ function Page() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
+
+  // Load persisted chat history when user is available
+  useEffect(() => {
+    if (!user) {
+      setHistoryLoading(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from("coach_messages")
+        .select("role, content")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+      if (cancelled) return;
+      if (error) {
+        console.error("load coach history", error);
+      } else if (data) {
+        setMessages(data.map((m) => ({ role: m.role as "user" | "assistant", content: m.content })));
+      }
+      setHistoryLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const persistMessage = async (msg: Msg) => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("coach_messages")
+      .insert({ user_id: user.id, role: msg.role, content: msg.content });
+    if (error) console.error("persist coach message", error);
+  };
+
+  const clearHistory = async () => {
+    if (!user || isStreaming) return;
+    const prev = messages;
+    setMessages([]);
+    const { error } = await supabase.from("coach_messages").delete().eq("user_id", user.id);
+    if (error) {
+      console.error("clear coach history", error);
+      setMessages(prev);
+      toast.error("Couldn't clear history.");
+    }
+  };
 
   if (!pro) {
     return (
@@ -73,6 +121,9 @@ function Page() {
     setMessages(next);
     setInput("");
     setIsStreaming(true);
+
+    // Persist the user message immediately
+    persistMessage(userMsg);
 
     // Inject lightweight context the model can use
     const context = `User context: streak ${streak} days. Brain scores — focus ${brainScores.focus}, memory ${brainScores.memory}, speed ${brainScores.speed}, logic ${brainScores.logic}, calm ${brainScores.calm}.`;
@@ -158,6 +209,10 @@ function Page() {
           }
         }
       }
+      // Persist the completed assistant reply
+      if (assistantSoFar.trim()) {
+        await persistMessage({ role: "assistant", content: assistantSoFar });
+      }
     } catch (e) {
       if ((e as Error).name !== "AbortError") {
         toast.error("Connection lost.");
@@ -171,22 +226,40 @@ function Page() {
     <MotionScreen className="flex h-[calc(100vh-88px)] flex-col">
       {/* Header */}
       <div className="px-6 pt-12 pb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#7858FF]/20 shadow-[0_0_18px_rgba(120,88,255,0.5)]">
-            <Sparkles className="h-4 w-4 text-[#A78BFA]" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#7858FF]/20 shadow-[0_0_18px_rgba(120,88,255,0.5)]">
+              <Sparkles className="h-4 w-4 text-[#A78BFA]" />
+            </div>
+            <div>
+              <h1 className="text-[18px] font-black leading-tight" style={{ letterSpacing: "-0.4px" }}>
+                AI Coach
+              </h1>
+              <p className="text-[11px] text-white/40">Personalized cognitive guidance</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-[18px] font-black leading-tight" style={{ letterSpacing: "-0.4px" }}>
-              AI Coach
-            </h1>
-            <p className="text-[11px] text-white/40">Personalized cognitive guidance</p>
-          </div>
+          {messages.length > 0 && (
+            <button
+              onClick={clearHistory}
+              disabled={isStreaming}
+              className="flex h-8 w-8 items-center justify-center rounded-full text-white/40 transition-colors hover:bg-white/5 hover:text-white/80 disabled:opacity-40"
+              aria-label="Clear chat history"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
 
       {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-6 pb-4">
-        {messages.length === 0 ? (
+        {historyLoading ? (
+          <div className="mt-6 space-y-2">
+            <div className="h-12 w-full animate-pulse rounded-[14px] bg-white/[0.04]" />
+            <div className="h-12 w-full animate-pulse rounded-[14px] bg-white/[0.04]" />
+            <div className="h-12 w-full animate-pulse rounded-[14px] bg-white/[0.04]" />
+          </div>
+        ) : messages.length === 0 ? (
           <div className="mt-6">
             <p className="text-[13px] text-white/60">
               Hey {user?.user_metadata?.display_name || "there"} 👋 — ask me anything about your training.
