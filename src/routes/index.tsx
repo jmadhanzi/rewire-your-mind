@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Logo } from "@/components/rewire/Logo";
-import { PrimaryButton } from "@/components/rewire/PrimaryButton";
-import { GhostButton } from "@/components/rewire/GhostButton";
-import { Card } from "@/components/rewire/Card";
-import { Tag } from "@/components/rewire/Tag";
+import { Logo } from "../components/rewire/Logo";
+import { PrimaryButton } from "../components/rewire/PrimaryButton";
+import { GhostButton } from "../components/rewire/GhostButton";
+import { Card } from "../components/rewire/Card";
+import { Tag } from "../components/rewire/Tag";
 import { Star, Quote } from "lucide-react";
 
 export const Route = createFileRoute("/")({
