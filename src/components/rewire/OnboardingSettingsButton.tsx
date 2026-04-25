@@ -7,6 +7,31 @@ import {
 } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 
+/**
+ * OnboardingSettingsButton
+ *
+ * Used in the header of every onboarding step route:
+ *   /onboarding/goals
+ *   /onboarding/challenges
+ *   /onboarding/identity
+ *   /onboarding/time
+ *   /onboarding/game
+ *   /onboarding/processing
+ *   /onboarding/profile
+ *
+ * Manual keyboard QA checklist (run on each route above):
+ *   [ ] Tab focuses the gear button (visible focus ring).
+ *   [ ] Enter on focused gear → popover opens, focus moves into content.
+ *   [ ] Space on focused gear → popover opens, focus moves into content.
+ *   [ ] Tab inside popover cycles through interactive elements (focus trap).
+ *   [ ] Escape → popover dismisses and focus returns to the gear button.
+ *   [ ] Click outside → popover dismisses.
+ *   [ ] Toggling "Skip restart confirmation" persists across reloads
+ *       (stored in `rewire-settings` via useSettingsStore).
+ *
+ * Behavior is provided by Radix Popover (shadcn/ui wrapper); no custom
+ * keyboard handling is required.
+ */
 export function OnboardingSettingsButton() {
   const skipConfirm = useSettingsStore((s) => s.skipRestartConfirm);
   const setSkipConfirm = useSettingsStore((s) => s.setSkipRestartConfirm);
