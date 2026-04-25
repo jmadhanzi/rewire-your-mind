@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, Check } from "lucide-react";
 import { ProgressBar } from "@/components/rewire/ProgressBar";
+import { RestartOnboardingButton } from "@/components/rewire/RestartOnboardingButton";
 import { PrimaryButton } from "@/components/rewire/PrimaryButton";
 import { useOnboardingStore } from "@/store/onboarding";
 import { cn } from "@/lib/utils";
@@ -64,6 +65,7 @@ function Page() {
           <div className="flex-1">
             <ProgressBar current={5} />
           </div>
+          <RestartOnboardingButton />
         </div>
         <p className="mt-8 text-[11px] font-bold uppercase tracking-[0.2em] text-[#A78BFA]">
           Step 5 of 8

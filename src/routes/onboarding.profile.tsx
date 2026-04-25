@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { ProgressBar } from "@/components/rewire/ProgressBar";
+import { RestartOnboardingButton } from "@/components/rewire/RestartOnboardingButton";
 import { PrimaryButton } from "@/components/rewire/PrimaryButton";
 import { useOnboardingStore } from "@/store/onboarding";
 
@@ -88,6 +89,7 @@ function Page() {
           <div className="flex-1">
             <ProgressBar current={8} />
           </div>
+          <RestartOnboardingButton />
         </div>
 
         <span className="mt-8 inline-flex w-fit items-center gap-1.5 rounded-full border border-[#F5C518]/40 bg-[#F5C518]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[#F5C518] shadow-[0_0_18px_rgba(245,197,24,0.22)]">
