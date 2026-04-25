@@ -47,7 +47,7 @@ export function OnboardingSettingsButton() {
           <Settings2 className="h-4 w-4" />
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-72">
+      <PopoverContent align="end" className="w-72" aria-label="Onboarding settings">
         <div className="space-y-3">
           <div>
             <p className="text-sm font-semibold">Onboarding settings</p>
