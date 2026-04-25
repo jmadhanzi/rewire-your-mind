@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import { ProgressBar } from "@/components/rewire/ProgressBar";
+import { RestartOnboardingButton } from "@/components/rewire/RestartOnboardingButton";
 
 export const Route = createFileRoute("/onboarding/processing")({
   component: Page,
@@ -57,7 +58,12 @@ function Page() {
   return (
     <main className="min-h-screen bg-[#07091A] text-white animate-[fadeUp_350ms_ease]">
       <div className="mx-auto flex min-h-screen max-w-md flex-col px-6 pb-10 pt-12">
-        <ProgressBar current={7} />
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <ProgressBar current={7} />
+          </div>
+          <RestartOnboardingButton />
+        </div>
 
         <div className="mt-12 flex flex-col items-center">
           <div className="relative h-[120px] w-[120px]">
