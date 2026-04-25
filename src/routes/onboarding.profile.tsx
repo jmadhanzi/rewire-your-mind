@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { ProgressBar } from "@/components/rewire/ProgressBar";
 import { RestartOnboardingButton } from "@/components/rewire/RestartOnboardingButton";
+import { OnboardingSettingsButton } from "@/components/rewire/OnboardingSettingsButton";
 import { PrimaryButton } from "@/components/rewire/PrimaryButton";
 import { useOnboardingStore } from "@/store/onboarding";
 
@@ -89,6 +90,7 @@ function Page() {
           <div className="flex-1">
             <ProgressBar current={8} />
           </div>
+          <OnboardingSettingsButton />
           <RestartOnboardingButton />
         </div>
 

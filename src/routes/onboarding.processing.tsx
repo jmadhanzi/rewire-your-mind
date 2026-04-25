@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import { ProgressBar } from "@/components/rewire/ProgressBar";
 import { RestartOnboardingButton } from "@/components/rewire/RestartOnboardingButton";
+import { OnboardingSettingsButton } from "@/components/rewire/OnboardingSettingsButton";
 
 export const Route = createFileRoute("/onboarding/processing")({
   component: Page,
@@ -62,6 +63,7 @@ function Page() {
           <div className="flex-1">
             <ProgressBar current={7} />
           </div>
+          <OnboardingSettingsButton />
           <RestartOnboardingButton />
         </div>
 

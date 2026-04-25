@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { ArrowLeft } from "lucide-react";
 import { ProgressBar } from "@/components/rewire/ProgressBar";
 import { RestartOnboardingButton } from "@/components/rewire/RestartOnboardingButton";
+import { OnboardingSettingsButton } from "@/components/rewire/OnboardingSettingsButton";
 import { PrimaryButton } from "@/components/rewire/PrimaryButton";
 import { useOnboardingStore } from "@/store/onboarding";
 import { cn } from "@/lib/utils";
@@ -156,6 +157,7 @@ function Page() {
           <div className="flex-1">
             <ProgressBar current={6} />
           </div>
+          <OnboardingSettingsButton />
           <RestartOnboardingButton />
         </div>
         <p className="mt-8 text-[11px] font-bold uppercase tracking-[0.2em] text-[#A78BFA]">
