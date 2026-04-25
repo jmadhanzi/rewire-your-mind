@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 
 const ICONS = ["🧠", "⚡", "🌿", "🎯", "🔥", "✨"];
 
+// Deterministic initial deck so SSR and the first client render match.
+const INITIAL_DECK = [...ICONS, ...ICONS].map((icon, i) => ({ id: i, icon }));
+
 function makeDeck() {
   const pairs = [...ICONS, ...ICONS].map((icon, i) => ({ id: i, icon }));
   for (let i = pairs.length - 1; i > 0; i--) {
@@ -15,7 +18,12 @@ function makeDeck() {
 type Props = { onComplete?: () => void };
 
 export function MiniMemory({ onComplete }: Props) {
-  const [deck, setDeck] = useState(() => makeDeck());
+  const [deck, setDeck] = useState(INITIAL_DECK);
+
+  // Shuffle only after mount so SSR markup matches the first client render.
+  useEffect(() => {
+    setDeck(makeDeck());
+  }, []);
   const [flipped, setFlipped] = useState<number[]>([]);
   const [matched, setMatched] = useState<Set<number>>(new Set());
   const [moves, setMoves] = useState(0);
