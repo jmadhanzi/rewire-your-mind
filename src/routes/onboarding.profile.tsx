@@ -90,8 +90,6 @@ function Page() {
             <ProgressBar current={8} />
           </div>
           <RestartOnboardingButton />
-          <div className="hidden">
-          </div>
         </div>
 
         <span className="mt-8 inline-flex w-fit items-center gap-1.5 rounded-full border border-[#F5C518]/40 bg-[#F5C518]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[#F5C518] shadow-[0_0_18px_rgba(245,197,24,0.22)]">

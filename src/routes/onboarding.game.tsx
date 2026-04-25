@@ -157,8 +157,6 @@ function Page() {
             <ProgressBar current={6} />
           </div>
           <RestartOnboardingButton />
-          <div className="hidden">
-          </div>
         </div>
         <p className="mt-8 text-[11px] font-bold uppercase tracking-[0.2em] text-[#A78BFA]">
           Step 6 of 8
