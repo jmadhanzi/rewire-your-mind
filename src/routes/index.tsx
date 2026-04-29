@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
@@ -86,15 +86,15 @@ function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <button onClick={() => navigate({ to: "/login" })} className="text-[13px] font-semibold text-white/60 hover:text-white transition-colors">
+          <a href="/login" className="text-[13px] font-semibold text-white/60 hover:text-white transition-colors">
             Sign in
-          </button>
-          <button
-            onClick={() => navigate({ to: "/welcome" })}
+          </a>
+          <a
+            href="/welcome"
             className="rounded-full bg-[#7858FF] px-5 py-2 text-[13px] font-bold text-white shadow-[0_4px_20px_rgba(120,88,255,0.5)] hover:scale-[1.03] transition-transform"
           >
             Start free →
-          </button>
+          </a>
         </div>
 
         <button onClick={() => setOpen((v) => !v)} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/[0.06] md:hidden" aria-label="Menu">
@@ -112,12 +112,12 @@ function Header() {
                 </button>
               ))}
               <div className="pt-2 space-y-2">
-                <button onClick={() => { setOpen(false); navigate({ to: "/login" }); }} className="w-full rounded-2xl border border-white/[0.1] py-3 text-[14px] font-semibold text-white/70">
+                <a href="/login" className="block w-full rounded-2xl border border-white/[0.1] py-3 text-center text-[14px] font-semibold text-white/70 hover:bg-white/[0.05] transition-colors">
                   Sign in
-                </button>
-                <button onClick={() => { setOpen(false); navigate({ to: "/welcome" }); }} className="w-full rounded-2xl bg-[#7858FF] py-3.5 text-[14px] font-bold text-white">
+                </a>
+                <a href="/welcome" className="block w-full rounded-2xl bg-[#7858FF] py-3.5 text-center text-[14px] font-bold text-white hover:bg-[#8a6dff] transition-colors">
                   Start free →
-                </button>
+                </a>
               </div>
             </div>
           </motion.div>
@@ -763,82 +763,91 @@ function FinalCta() {
 }
 
 /* ── FOOTER ── */
-const FOOTER_COLS = [
+/* Footer link data — plain hrefs, no router dependency */
+const FOOTER_COLS: {
+  title: string;
+  links: { label: string; href: string }[];
+}[] = [
   {
     title: "Product",
     links: [
-      { label: "How it works", hash: "how" },
-      { label: "Features", hash: "features" },
-      { label: "Reviews", hash: "reviews" },
-      { label: "Pricing", hash: "pricing" },
-      { label: "Blog", route: "/blog" },
-      { label: "Changelog", route: "/changelog" },
+      { label: "How it works", href: "/#how" },
+      { label: "Features",     href: "/#features" },
+      { label: "Reviews",      href: "/#reviews" },
+      { label: "Pricing",      href: "/#pricing" },
+      { label: "Blog",         href: "/blog" },
+      { label: "Changelog",    href: "/changelog" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About us", route: "/about" },
-      { label: "Careers", route: "/careers" },
-      { label: "Press kit", route: "/press" },
-      { label: "Contact", route: "/contact" },
+      { label: "About us",   href: "/about" },
+      { label: "Careers",    href: "/careers" },
+      { label: "Press kit",  href: "/press" },
+      { label: "Contact",    href: "/contact" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { label: "Privacy Policy", route: "/privacy" },
-      { label: "Terms of Service", route: "/terms" },
-      { label: "Cookie Policy", route: "/cookies" },
-      { label: "Accessibility", route: "/accessibility" },
+      { label: "Privacy Policy",    href: "/privacy" },
+      { label: "Terms of Service",  href: "/terms" },
+      { label: "Cookie Policy",     href: "/cookies" },
+      { label: "Accessibility",     href: "/accessibility" },
     ],
   },
-] as const;
+];
 
 function Footer() {
-  const scrollTo = (hash: string) => {
-    const el = document.getElementById(hash);
-    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
-  };
-
   return (
     <footer className="border-t border-white/[0.05] bg-[#07091A] px-5 py-14">
       <div className="mx-auto grid max-w-[1140px] gap-10 md:grid-cols-4">
+        {/* Brand */}
         <div className="md:col-span-1">
           <div className="flex items-center gap-2.5">
             <Logo size={30} />
             <span className="text-[17px] font-black" style={{ letterSpacing: "-0.4px" }}>Rewire</span>
           </div>
-          <p className="mt-3 max-w-xs text-[13px] text-white/40">Brain training for ADHD minds. 5 minutes a day. Real results.</p>
+          <p className="mt-3 max-w-xs text-[13px] text-white/40">
+            Brain training for ADHD minds. 5 minutes a day. Real results.
+          </p>
           <div className="mt-4 flex gap-2">
             {[Twitter, Instagram, Youtube].map((Icon, i) => (
-              <a key={i} href="#" aria-label="Social" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.05] text-white/40 hover:bg-white/[0.1] hover:text-white/80 transition-all">
+              <a
+                key={i}
+                href="#"
+                aria-label="Social"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.05] text-white/40 hover:bg-white/[0.1] hover:text-white/80 transition-all"
+              >
                 <Icon className="h-4 w-4" />
               </a>
             ))}
           </div>
         </div>
+
+        {/* Link columns */}
         {FOOTER_COLS.map((col) => (
           <div key={col.title}>
-            <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/30">{col.title}</div>
+            <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/30">
+              {col.title}
+            </div>
             <ul className="mt-3 space-y-2.5">
-              {col.links.map((l: any) => (
+              {col.links.map((l) => (
                 <li key={l.label}>
-                  {l.route ? (
-                    <Link to={l.route} className="text-[13px] text-white/50 hover:text-white/80 transition-colors">
-                      {l.label}
-                    </Link>
-                  ) : (
-                    <button onClick={() => scrollTo(l.hash)} className="text-[13px] text-white/50 hover:text-white/80 transition-colors text-left">
-                      {l.label}
-                    </button>
-                  )}
+                  <a
+                    href={l.href}
+                    className="text-[13px] text-white/50 hover:text-white/80 transition-colors"
+                  >
+                    {l.label}
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
         ))}
       </div>
+
       <div className="mx-auto mt-12 max-w-[1140px] border-t border-white/[0.05] pt-6 text-center text-[12px] text-white/25">
         © 2025 Rewire Inc. All rights reserved. · Built for 🧠 minds worldwide.
       </div>
