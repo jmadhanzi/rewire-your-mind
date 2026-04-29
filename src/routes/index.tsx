@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
@@ -63,6 +63,7 @@ function Header() {
 
   const links = [
     { id: "how", label: "How it works" },
+    { id: "features", label: "Features" },
     { id: "reviews", label: "Reviews" },
     { id: "pricing", label: "Pricing" },
     { id: "faq", label: "FAQ" },
@@ -545,7 +546,7 @@ function Features() {
     gold: "border-[#F5C518]/30 bg-[#F5C518]/15 text-[#F5C518]",
   };
   return (
-    <section className="px-5 py-16 md:py-24">
+    <section id="features" className="px-5 py-16 md:py-24">
       <div className="mx-auto max-w-[1140px]">
         <div className="text-center">
           <div className="text-[12px] font-bold uppercase tracking-[0.25em] text-[#A78BFA]">Features</div>
@@ -762,7 +763,44 @@ function FinalCta() {
 }
 
 /* ── FOOTER ── */
+const FOOTER_COLS = [
+  {
+    title: "Product",
+    links: [
+      { label: "How it works", hash: "how" },
+      { label: "Features", hash: "features" },
+      { label: "Reviews", hash: "reviews" },
+      { label: "Pricing", hash: "pricing" },
+      { label: "Blog", route: "/blog" },
+      { label: "Changelog", route: "/changelog" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About us", route: "/about" },
+      { label: "Careers", route: "/careers" },
+      { label: "Press kit", route: "/press" },
+      { label: "Contact", route: "/contact" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Privacy Policy", route: "/privacy" },
+      { label: "Terms of Service", route: "/terms" },
+      { label: "Cookie Policy", route: "/cookies" },
+      { label: "Accessibility", route: "/accessibility" },
+    ],
+  },
+] as const;
+
 function Footer() {
+  const scrollTo = (hash: string) => {
+    const el = document.getElementById(hash);
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
+  };
+
   return (
     <footer className="border-t border-white/[0.05] bg-[#07091A] px-5 py-14">
       <div className="mx-auto grid max-w-[1140px] gap-10 md:grid-cols-4">
@@ -774,22 +812,28 @@ function Footer() {
           <p className="mt-3 max-w-xs text-[13px] text-white/40">Brain training for ADHD minds. 5 minutes a day. Real results.</p>
           <div className="mt-4 flex gap-2">
             {[Twitter, Instagram, Youtube].map((Icon, i) => (
-              <a key={i} href="#" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.05] text-white/40 hover:bg-white/[0.1] hover:text-white/80 transition-all">
+              <a key={i} href="#" aria-label="Social" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.05] text-white/40 hover:bg-white/[0.1] hover:text-white/80 transition-all">
                 <Icon className="h-4 w-4" />
               </a>
             ))}
           </div>
         </div>
-        {[
-          { title: "Product", links: ["How it works", "Pricing", "Reviews", "Blog", "Changelog"] },
-          { title: "Company", links: ["About", "Careers", "Press kit", "Contact"] },
-          { title: "Legal", links: ["Privacy Policy", "Terms of Service", "Cookie Policy", "Accessibility"] },
-        ].map((col) => (
+        {FOOTER_COLS.map((col) => (
           <div key={col.title}>
             <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/30">{col.title}</div>
-            <ul className="mt-3 space-y-2">
-              {col.links.map((l) => (
-                <li key={l}><a href="#" className="text-[13px] text-white/50 hover:text-white/80 transition-colors">{l}</a></li>
+            <ul className="mt-3 space-y-2.5">
+              {col.links.map((l: any) => (
+                <li key={l.label}>
+                  {l.route ? (
+                    <Link to={l.route} className="text-[13px] text-white/50 hover:text-white/80 transition-colors">
+                      {l.label}
+                    </Link>
+                  ) : (
+                    <button onClick={() => scrollTo(l.hash)} className="text-[13px] text-white/50 hover:text-white/80 transition-colors text-left">
+                      {l.label}
+                    </button>
+                  )}
+                </li>
               ))}
             </ul>
           </div>

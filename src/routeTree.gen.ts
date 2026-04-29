@@ -15,6 +15,16 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as BlogRouteImport } from './routes/blog'
+import { Route as CareersRouteImport } from './routes/careers'
+import { Route as ChangelogRouteImport } from './routes/changelog'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as PressRouteImport } from './routes/press'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as CookiesRouteImport } from './routes/cookies'
+import { Route as AccessibilityRouteImport } from './routes/accessibility'
 import { Route as OnboardingTimeRouteImport } from './routes/onboarding.time'
 import { Route as OnboardingProfileRouteImport } from './routes/onboarding.profile'
 import { Route as OnboardingProcessingRouteImport } from './routes/onboarding.processing'
@@ -59,6 +69,56 @@ const AppRoute = AppRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChangelogRoute = ChangelogRouteImport.update({
+  id: '/changelog',
+  path: '/changelog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PressRoute = PressRouteImport.update({
+  id: '/press',
+  path: '/press',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessibilityRoute = AccessibilityRouteImport.update({
+  id: '/accessibility',
+  path: '/accessibility',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingTimeRoute = OnboardingTimeRouteImport.update({
@@ -159,6 +219,16 @@ export interface FileRoutesByFullPath {
   '/onboarding/time': typeof OnboardingTimeRoute
   '/app/games/$gameId': typeof AppGamesGameIdRoute
   '/app/games/memory-matrix': typeof AppGamesMemoryMatrixRoute
+  '/about': typeof AboutRoute
+  '/blog': typeof BlogRoute
+  '/careers': typeof CareersRoute
+  '/changelog': typeof ChangelogRoute
+  '/contact': typeof ContactRoute
+  '/press': typeof PressRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
+  '/cookies': typeof CookiesRoute
+  '/accessibility': typeof AccessibilityRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -182,6 +252,16 @@ export interface FileRoutesByTo {
   '/onboarding/time': typeof OnboardingTimeRoute
   '/app/games/$gameId': typeof AppGamesGameIdRoute
   '/app/games/memory-matrix': typeof AppGamesMemoryMatrixRoute
+  '/about': typeof AboutRoute
+  '/blog': typeof BlogRoute
+  '/careers': typeof CareersRoute
+  '/changelog': typeof ChangelogRoute
+  '/contact': typeof ContactRoute
+  '/press': typeof PressRoute
+  '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
+  '/cookies': typeof CookiesRoute
+  '/accessibility': typeof AccessibilityRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -231,6 +311,16 @@ export interface FileRouteTypes {
     | '/onboarding/time'
     | '/app/games/$gameId'
     | '/app/games/memory-matrix'
+    | '/about'
+    | '/blog'
+    | '/careers'
+    | '/changelog'
+    | '/contact'
+    | '/press'
+    | '/privacy'
+    | '/terms'
+    | '/cookies'
+    | '/accessibility'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -254,6 +344,16 @@ export interface FileRouteTypes {
     | '/onboarding/time'
     | '/app/games/$gameId'
     | '/app/games/memory-matrix'
+    | '/about'
+    | '/blog'
+    | '/careers'
+    | '/changelog'
+    | '/contact'
+    | '/press'
+    | '/privacy'
+    | '/terms'
+    | '/cookies'
+    | '/accessibility'
   id:
     | '__root__'
     | '/'
@@ -277,6 +377,16 @@ export interface FileRouteTypes {
     | '/onboarding/time'
     | '/app/games/$gameId'
     | '/app/games/memory-matrix'
+    | '/about'
+    | '/blog'
+    | '/careers'
+    | '/changelog'
+    | '/contact'
+    | '/press'
+    | '/privacy'
+    | '/terms'
+    | '/cookies'
+    | '/accessibility'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -286,6 +396,16 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRouteWithChildren
   PaywallRoute: typeof PaywallRoute
   WelcomeRoute: typeof WelcomeRoute
+  AboutRoute: typeof AboutRoute
+  BlogRoute: typeof BlogRoute
+  CareersRoute: typeof CareersRoute
+  ChangelogRoute: typeof ChangelogRoute
+  ContactRoute: typeof ContactRoute
+  PressRoute: typeof PressRoute
+  PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
+  CookiesRoute: typeof CookiesRoute
+  AccessibilityRoute: typeof AccessibilityRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -437,6 +557,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppGamesGameIdRouteImport
       parentRoute: typeof AppGamesRoute
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/changelog': {
+      id: '/changelog'
+      path: '/changelog'
+      fullPath: '/changelog'
+      preLoaderRoute: typeof ChangelogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/press': {
+      id: '/press'
+      path: '/press'
+      fullPath: '/press'
+      preLoaderRoute: typeof PressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessibility': {
+      id: '/accessibility'
+      path: '/accessibility'
+      fullPath: '/accessibility'
+      preLoaderRoute: typeof AccessibilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -505,7 +695,22 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRouteWithChildren,
   PaywallRoute: PaywallRoute,
   WelcomeRoute: WelcomeRoute,
+  AboutRoute: AboutRoute,
+  BlogRoute: BlogRoute,
+  CareersRoute: CareersRoute,
+  ChangelogRoute: ChangelogRoute,
+  ContactRoute: ContactRoute,
+  PressRoute: PressRoute,
+  PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
+  CookiesRoute: CookiesRoute,
+  AccessibilityRoute: AccessibilityRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+// ──────────────────────────────────────────────────────────────
+// Manually registered footer / info page routes
+// (auto-regenerated by TanStack Router CLI on next `npm run dev`)
+// ──────────────────────────────────────────────────────────────
