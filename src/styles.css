@@ -282,3 +282,167 @@
   background-size: 200% 100%;
   animation: shimmer 1.6s linear infinite;
 }
+
+/* ── Premium animation additions ── */
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes borderPulse {
+  0%, 100% { border-color: rgba(120, 88, 255, 0.3); }
+  50% { border-color: rgba(120, 88, 255, 0.8); box-shadow: 0 0 24px rgba(120, 88, 255, 0.35); }
+}
+
+@keyframes numberCount {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes orb1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.08); }
+  66% { transform: translate(-20px, 20px) scale(0.94); }
+}
+
+@keyframes orb2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-35px, 25px) scale(1.06); }
+  66% { transform: translate(25px, -30px) scale(0.96); }
+}
+
+@keyframes orb3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, 30px) scale(1.1); }
+}
+
+@keyframes cardHover {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
+}
+
+/* ── Utility classes ── */
+
+.gradient-text {
+  background: linear-gradient(135deg, #7858FF 0%, #00D9A3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-gold {
+  background: linear-gradient(135deg, #F5C518 0%, #FF9500 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-warm {
+  background: linear-gradient(135deg, #A78BFA 0%, #7858FF 50%, #00D9A3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass {
+  background: rgba(13, 18, 38, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-light {
+  background: rgba(19, 26, 46, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glow-violet {
+  box-shadow: 0 0 40px rgba(120, 88, 255, 0.4), 0 0 80px rgba(120, 88, 255, 0.15);
+}
+
+.glow-teal {
+  box-shadow: 0 0 40px rgba(0, 217, 163, 0.35), 0 0 80px rgba(0, 217, 163, 0.12);
+}
+
+.glow-gold {
+  box-shadow: 0 0 40px rgba(245, 197, 24, 0.35), 0 0 80px rgba(245, 197, 24, 0.12);
+}
+
+.ticker-wrap {
+  overflow: hidden;
+  -webkit-mask: linear-gradient(90deg, transparent, white 10%, white 90%, transparent);
+  mask: linear-gradient(90deg, transparent, white 10%, white 90%, transparent);
+}
+
+.ticker-inner {
+  display: flex;
+  animation: ticker 28s linear infinite;
+}
+
+.grain {
+  position: relative;
+}
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  border-radius: inherit;
+  opacity: 0.4;
+}
+
+.orb-1 { animation: orb1 12s ease-in-out infinite; }
+.orb-2 { animation: orb2 15s ease-in-out infinite; }
+.orb-3 { animation: orb3 10s ease-in-out infinite; }
+
+.animate-slide-up { animation: slideInUp 0.5s ease-out forwards; }
+.animate-scale-in { animation: scaleIn 0.4s ease-out forwards; }
+.animate-border-pulse { animation: borderPulse 2s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulseGlow 3s ease-in-out infinite; }
+
+.gradient-bg-animated {
+  background: linear-gradient(-45deg, #7858FF, #5b3eff, #00D9A3, #0099ff);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+/* Card elevation hover effect */
+.card-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Number animation */
+.animate-count { animation: numberCount 0.3s ease-out; }
