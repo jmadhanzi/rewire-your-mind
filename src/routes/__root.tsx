@@ -31,14 +31,15 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Rewire — Brain Training Built for ADHD Minds" },
+      { name: "description", content: "5-minute daily sessions designed for ADHD. Build focus, calm anxiety, and train memory. Free to start." },
+      { name: "theme-color", content: "#07091A" },
+      { property: "og:title", content: "Rewire — Brain Training Built for ADHD Minds" },
+      { property: "og:description", content: "5-minute daily sessions designed for ADHD. Join 2M+ users. Free to start." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Rewire — Brain Training Built for ADHD Minds" },
+      { name: "twitter:description", content: "5-minute daily sessions designed for ADHD. Join 2M+ users. Free to start." },
     ],
     links: [
       {

@@ -7,10 +7,18 @@ import { FREE_DAILY_SESSION_LIMIT, isPro } from "@/lib/freemium";
 import { MotionScreen } from "@/components/rewire/MotionScreen";
 import { HomeSkeleton } from "@/components/rewire/skeletons/HomeSkeleton";
 import { useAuth } from "@/hooks/use-auth";
+import { todayKey } from "@/lib/streak";
 
 export const Route = createFileRoute("/app/home")({
   component: Page,
 });
+
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning 👋";
+  if (h < 17) return "Good afternoon 👋";
+  return "Good evening 👋";
+}
 
 function Page() {
   const navigate = useNavigate();
@@ -18,11 +26,14 @@ function Page() {
     useUserStore();
   const goals = useOnboardingStore((s) => s.goals);
   const subscriptionTier = useUserStore((s) => s.subscriptionTier);
-  const getSessionsToday = useUserStore((s) => s.getSessionsToday);
+  // Reactive: derive sessionsToday directly from store state
+  const sessionsToday = useUserStore((s) => {
+    const today = todayKey();
+    return s.sessionsTodayDate === today ? s.sessionsToday : 0;
+  });
   const hydrated = useUserStore((s) => s.hydrated);
   const { user, loading: authLoading } = useAuth();
   const pro = isPro(subscriptionTier);
-  const sessionsToday = getSessionsToday();
 
   if (authLoading || (user && !hydrated)) {
     return (
@@ -44,7 +55,7 @@ function Page() {
 
   return (
     <MotionScreen>
-      <AppHeader greeting="Good morning 👋" title="Ready to rewire?" />
+      <AppHeader greeting={getGreeting()} title="Ready to rewire?" />
 
       <div className="px-6 pt-7 space-y-4">
         {!pro && (

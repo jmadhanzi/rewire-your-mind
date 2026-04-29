@@ -59,7 +59,7 @@ function AppLayout() {
       >
         <div className="grid grid-cols-5 px-2 py-2">
           {TABS.map((tab) => {
-            const active = pathname === tab.to;
+            const active = pathname === tab.to || pathname.startsWith(tab.to + "/");
             const isPressed = pressed === tab.to;
             return (
               <Link

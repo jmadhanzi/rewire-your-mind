@@ -53,13 +53,13 @@ type State = {
 export const useUserStore = create<State>()(
   persist(
     (set, get) => ({
-      streak: 7,
-      totalSessions: 156,
-      focusImprovement: 41,
-      programProgress: 89,
-      leaderboardRank: 42,
-      brainScores: { focus: 42, memory: 72, speed: 59, logic: 74, calm: 54 },
-      currentDay: 4,
+      streak: 0,
+      totalSessions: 0,
+      focusImprovement: 0,
+      programProgress: 0,
+      leaderboardRank: 0,
+      brainScores: { focus: 0, memory: 0, speed: 0, logic: 0, calm: 0 },
+      currentDay: 1,
       sessionHistory: [],
       hydrated: false,
       lastSessionDate: null,

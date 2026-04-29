@@ -13,6 +13,7 @@ import { FREE_AD_EVERY_N_SESSIONS, FREE_DAILY_SESSION_LIMIT, isPro, timeUntilMid
 import { haptics } from "@/lib/haptics";
 import { MotionScreen } from "@/components/rewire/MotionScreen";
 import { motion, AnimatePresence } from "framer-motion";
+import { todayKey } from "@/lib/streak";
 
 export const Route = createFileRoute("/app/games/memory-matrix")({
   component: Page,
@@ -48,11 +49,14 @@ function Page() {
   const addSession = useUserStore((s) => s.addSession);
   const recordSessionForUser = useUserStore((s) => s.recordSessionForUser);
   const subscriptionTier = useUserStore((s) => s.subscriptionTier);
-  const getSessionsToday = useUserStore((s) => s.getSessionsToday);
+  // Reactive: derive sessionsToday directly from store state so showAd updates after recording
+  const sessionsToday = useUserStore((s) => {
+    const today = todayKey();
+    return s.sessionsTodayDate === today ? s.sessionsToday : 0;
+  });
   const pendingMilestone = useUserStore((s) => s.pendingMilestone);
   const { user } = useAuth();
   const pro = isPro(subscriptionTier);
-  const sessionsToday = getSessionsToday();
 
   // Block entry when daily limit already reached for free users.
   const limitReached = !pro && sessionsToday >= FREE_DAILY_SESSION_LIMIT;

@@ -9,6 +9,7 @@ import { MotionScreen } from "@/components/rewire/MotionScreen";
 import { motion } from "framer-motion";
 import { GamesSkeleton } from "@/components/rewire/skeletons/GamesSkeleton";
 import { useAuth } from "@/hooks/use-auth";
+import { todayKey } from "@/lib/streak";
 
 export const Route = createFileRoute("/app/games")({
   component: Page,
@@ -43,11 +44,14 @@ function Page() {
   const navigate = useNavigate();
   const [active, setActive] = useState<Category>("All");
   const subscriptionTier = useUserStore((s) => s.subscriptionTier);
-  const getSessionsToday = useUserStore((s) => s.getSessionsToday);
+  // Reactive: derive sessionsToday directly from store state
+  const sessionsToday = useUserStore((s) => {
+    const today = todayKey();
+    return s.sessionsTodayDate === today ? s.sessionsToday : 0;
+  });
   const hydrated = useUserStore((s) => s.hydrated);
   const { user, loading: authLoading } = useAuth();
   const pro = isPro(subscriptionTier);
-  const sessionsToday = getSessionsToday();
   const limitReached = !pro && sessionsToday >= FREE_DAILY_SESSION_LIMIT;
   const [gate, setGate] = useState<{ title: string; message: string } | null>(null);
 

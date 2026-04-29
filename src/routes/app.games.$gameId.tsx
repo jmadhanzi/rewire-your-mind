@@ -1,10 +1,11 @@
-import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useUserStore } from "@/store/user";
 import { FREE_DAILY_SESSION_LIMIT, isFreeGame, isPro, timeUntilMidnight } from "@/lib/freemium";
 import { PrimaryButton } from "@/components/rewire/PrimaryButton";
 import { GhostButton } from "@/components/rewire/GhostButton";
 import { useNavigate } from "@tanstack/react-router";
 import { Lock } from "lucide-react";
+import { todayKey } from "@/lib/streak";
 
 export const Route = createFileRoute("/app/games/$gameId")({
   component: Page,
@@ -14,14 +15,12 @@ function Page() {
   const { gameId } = Route.useParams();
   const navigate = useNavigate();
   const subscriptionTier = useUserStore((s) => s.subscriptionTier);
-  const getSessionsToday = useUserStore((s) => s.getSessionsToday);
+  // Reactive: derive sessionsToday directly from store state
+  const sessionsToday = useUserStore((s) => {
+    const today = todayKey();
+    return s.sessionsTodayDate === today ? s.sessionsToday : 0;
+  });
   const pro = isPro(subscriptionTier);
-  const sessionsToday = getSessionsToday();
-
-  // Redirect Memory Matrix to its real implementation
-  if (gameId === "memory-matrix") {
-    return <Navigate to="/app/games/memory-matrix" />;
-  }
 
   // Locked Pro game
   if (!pro && !isFreeGame(gameId)) {

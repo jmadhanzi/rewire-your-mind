@@ -15,27 +15,27 @@ export const Route = createFileRoute("/app/progress")({
 
 const DAY_LABELS = ["S", "M", "T", "W", "T", "F", "S"];
 
-type Domain = {
+type DomainDisplay = {
   name: string;
-  before: number;
-  after: number;
+  score: number;
   color: string;
 };
-
-const DOMAINS: Domain[] = [
-  { name: "Focus", before: 42, after: 67, color: "#7858FF" },
-  { name: "Memory", before: 68, after: 78, color: "#00D9A3" },
-  { name: "Speed", before: 55, after: 71, color: "#F5C518" },
-  { name: "Logic", before: 71, after: 81, color: "#FF6B6B" },
-  { name: "Calm", before: 38, after: 54, color: "#A78BFA" },
-];
 
 function Page() {
   const sessionHistory = useUserStore((s) => s.sessionHistory);
   const streak = useUserStore((s) => s.streak);
   const totalSessions = useUserStore((s) => s.totalSessions);
+  const brainScores = useUserStore((s) => s.brainScores);
   const hydrated = useUserStore((s) => s.hydrated);
   const { user, loading: authLoading } = useAuth();
+
+  const domains: DomainDisplay[] = [
+    { name: "Focus", score: brainScores.focus, color: "#7858FF" },
+    { name: "Memory", score: brainScores.memory, color: "#00D9A3" },
+    { name: "Speed", score: brainScores.speed, color: "#F5C518" },
+    { name: "Logic", score: brainScores.logic, color: "#FF6B6B" },
+    { name: "Calm", score: brainScores.calm, color: "#A78BFA" },
+  ];
 
   // Build last-7-day buckets from session history (local time)
   const { week, days, accuracy, sessionsCount } = useMemo(() => {
@@ -145,37 +145,34 @@ function Page() {
         </div>
       </Card>
 
-      {/* Cognitive improvement */}
+      {/* Cognitive scores */}
       <Card className="mt-4">
-        <h2 className="text-[14px] font-bold">Cognitive improvement</h2>
+        <h2 className="text-[14px] font-bold">Brain scores</h2>
         <div className="mt-4 space-y-4">
-          {DOMAINS.map((d, i) => {
-            const delta = d.after - d.before;
-            return (
-              <div key={d.name}>
-                <div className="flex items-baseline gap-1.5 text-[12px]">
-                  <span className="font-semibold text-white/80">{d.name}:</span>
-                  <span className="text-white/30">{d.before}%</span>
-                  <span className="text-white/30">→</span>
-                  <span className="font-bold" style={{ color: d.color }}>
-                    {d.after}%
-                  </span>
-                  <span className="ml-auto text-[11px] font-bold text-[#00D9A3]">
-                    +{delta}%
-                  </span>
-                </div>
-                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
-                  <motion.div
-                    className="h-full rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${d.after}%` }}
-                    transition={{ duration: 0.7, ease: "easeOut", delay: i * 0.1 }}
-                    style={{ backgroundColor: d.color }}
-                  />
-                </div>
+          {domains.map((d, i) => (
+            <div key={d.name}>
+              <div className="flex items-baseline gap-1.5 text-[12px]">
+                <span className="font-semibold text-white/80">{d.name}</span>
+                <span className="ml-auto text-[13px] font-black tabular-nums" style={{ color: d.color }}>
+                  {d.score > 0 ? d.score : "—"}
+                </span>
               </div>
-            );
-          })}
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
+                <motion.div
+                  className="h-full rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: d.score > 0 ? `${Math.min(d.score, 100)}%` : "0%" }}
+                  transition={{ duration: 0.7, ease: "easeOut", delay: i * 0.1 }}
+                  style={{ backgroundColor: d.color }}
+                />
+              </div>
+            </div>
+          ))}
+          {domains.every((d) => d.score === 0) && (
+            <p className="text-center text-[12px] text-white/40 py-2">
+              Play some games to build your brain profile.
+            </p>
+          )}
         </div>
       </Card>
     </MotionScreen>

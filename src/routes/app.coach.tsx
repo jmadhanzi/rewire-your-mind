@@ -44,8 +44,14 @@ function Page() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
+  const scrollToBottom = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    }
+  };
+
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    scrollToBottom();
   }, [messages]);
 
   // Load persisted chat history when user is available
@@ -194,6 +200,7 @@ function Page() {
         setMessages((prev) =>
           prev.map((m) => (m.id === placeholderId ? { ...m, content: assistantSoFar } : m)),
         );
+        scrollToBottom();
       };
 
       while (!streamDone) {
